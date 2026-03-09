@@ -1,47 +1,25 @@
 .dashboard {
-  min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-/* Hero Section */
 .hero-section {
   text-align: center;
   padding: 4rem 2rem;
   background: linear-gradient(135deg, #0f4c5c 0%, #2c7a7b 100%);
   color: white;
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
   margin-bottom: 2rem;
 }
 
 .hero-title {
   font-size: 3rem;
   margin-bottom: 1rem;
-  animation: fadeInDown 1s ease;
 }
 
-.highlight {
-  color: #f6e05e;
-  position: relative;
-  display: inline-block;
-}
-
-.highlight::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: #f6e05e;
-  transform: scaleX(0);
-  animation: slideIn 0.5s ease forwards 0.5s;
-}
 
 .hero-subtitle {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   opacity: 0.9;
-  animation: fadeInUp 1s ease 0.2s both;
 }
 
 .hero-description {
@@ -50,17 +28,8 @@
   font-size: 1.1rem;
   line-height: 1.6;
   opacity: 0.9;
-  animation: fadeInUp 1s ease 0.3s both;
 }
 
-/* CTA Buttons */
-.cta-buttons {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  animation: fadeInUp 1s ease 0.4s both;
-}
 
 .cta-btn {
   padding: 1rem 2rem;
@@ -143,25 +112,13 @@
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  animation: fadeInUp 1s ease;
-  animation-fill-mode: both;
+
 }
 
-.feature-card:nth-child(1) { animation-delay: 0.1s; }
-.feature-card:nth-child(2) { animation-delay: 0.2s; }
-.feature-card:nth-child(3) { animation-delay: 0.3s; }
-.feature-card:nth-child(4) { animation-delay: 0.4s; }
-
 .feature-card:hover {
-  transform: translateY(-10px);
   box-shadow: 0 20px 40px rgba(15, 76, 92, 0.2);
 }
 
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
 
 .feature-title {
   font-size: 1.3rem;
@@ -174,86 +131,9 @@
   line-height: 1.6;
 }
 
-/* How It Works Section */
-.how-it-works {
-  background: white;
-  padding: 4rem 2rem;
-  margin: 2rem 0;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 2.5rem;
-  color: #0f4c5c;
-  margin-bottom: 3rem;
-}
-
-.steps-container {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  flex-wrap: wrap;
-}
-
-.step {
-  flex: 1;
-  min-width: 250px;
-  text-align: center;
-  position: relative;
-}
-
-.step:not(:last-child)::after {
-  content: '→';
-  position: absolute;
-  right: -2rem;
-  top: 30px;
-  font-size: 2rem;
-  color: #f6e05e;
-  font-weight: bold;
-}
-
-@media (max-width: 768px) {
-  .step:not(:last-child)::after {
-    content: '↓';
-    right: 50%;
-    top: auto;
-    bottom: -2rem;
-    transform: translateX(50%);
-  }
-}
-
-.step-number {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #f6e05e 0%, #fbbf24 100%);
-  color: #0f4c5c;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 10px 20px rgba(246, 224, 94, 0.3);
-}
-
-.step-title {
-  font-size: 1.3rem;
-  color: #0f4c5c;
-  margin-bottom: 1rem;
-}
-
-.step-description {
-  color: #666;
-  line-height: 1.6;
-}
-
-/* CTA Banner */
 .cta-banner {
   background: linear-gradient(135deg, #0f4c5c 0%, #2c7a7b 100%);
-  padding: 4rem 2rem;
+  padding: 2rem 2rem;
   text-align: center;
   color: white;
   margin-top: 2rem;
@@ -288,7 +168,7 @@
   font-size: 1rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s ease;
+
 }
 
 .banner-register {
@@ -296,11 +176,6 @@
   color: #0f4c5c;
 }
 
-.banner-register:hover {
-  background: #fbbf24;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(246, 224, 94, 0.3);
-}
 
 .banner-login {
   background: transparent;
@@ -308,15 +183,9 @@
   border: 2px solid #f6e05e;
 }
 
-.banner-login:hover {
-  background: rgba(246, 224, 94, 0.1);
-  transform: translateY(-3px);
-}
 
-/* Welcome Back Section */
 .welcome-back {
   text-align: center;
-  animation: fadeInUp 1s ease;
 }
 
 .welcome-back p {
@@ -324,39 +193,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Animations */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.2rem;
