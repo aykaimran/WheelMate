@@ -1,20 +1,33 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import './Navbar.css'
+
 const Navbar = () => {
   return (
-        <nav className="navbar">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-          <Link to="/">Dashboard</Link>
-          <Link to="/postrides">Post Rides</Link>
-          <Link to="/requestride">Request Ride</Link>
-          <Link to="/viewdetails">View Details</Link>
-          <Link to="/availablerides">Available Rides</Link>
-          <Link to="/changepassword">Change Password</Link>
-          <Link to="/mybookings">My Bookings</Link>
+    <nav className="navbar">
+      <div className="nav-container">
+        <div className="nav-brand">
+          WheelMate
+        </div>
+        
+        <div className="nav-links">
+          <Link to="/" className="nav-link">Dashboard</Link>
+          <Link to="/availablerides" className="nav-link">Available Rides</Link>
+          <Link to="/postrides" className="nav-link">Post Ride</Link>
+          <Link to="/requestride" className="nav-link">Request Ride</Link>
+          <Link to="/mybookings" className="nav-link">My Bookings</Link>
+          <Link to="/viewdetails" className="nav-link">Details</Link>
+          <Link to="/changepassword" className="nav-link">Change Password</Link>
 
-        </nav>
-    
+          
+          <div className="auth-section">
+            <Link to="/login" className="login-btn">Login</Link>
+            <Link to="/register" className="register-btn">Register</Link>
+            <Link to="/login" className="logout-btn">Logout</Link>
+          </div>
+        </div>
+      </div>
+    </nav>
   )
 }
 
