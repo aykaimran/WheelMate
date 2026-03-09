@@ -1,10 +1,10 @@
-import { useState } from 'react'
+
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import Login from './pages/login'
+import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import Register from './pages/register'
+import Register from './pages/Register'
 import PostRides from './pages/Postrides'
 import RequestRide from './pages/RequestRide'
 import ViewDetails from './pages/ViewDetails'
