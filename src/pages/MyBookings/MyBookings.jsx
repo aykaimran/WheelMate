@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import './MyBookings.css'
 
 const MyBookings = () => {
-  // Sample booking data
   const bookings = [
     {
       id: 1,
