@@ -7,9 +7,9 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import Register from './pages/Register/Register'
 import PostRides from './pages/Postrides'
 import RequestRide from './pages/RequestRide'
-import ViewDetails from './pages/ViewDetails'
+import ViewDetails from './pages/RideDetail/ViewDetails'
 import AvailableRides from './pages/AvailableRides/AvailableRides'
-import ChangePassword from './pages/ChangePassword'
+import ChangePassword from './pages/ChangePassword/ChangePassword'
 import MyBookings from './pages/MyBookings'
 function App() {
 
@@ -23,7 +23,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/postrides" element={<PostRides />} />
         <Route path="/requestride" element={<RequestRide />} />
-        <Route path="/viewdetails" element={<ViewDetails />} />
+        <Route path="/viewdetails/:id" element={<ViewDetails />} />
         <Route path="/availablerides" element={<AvailableRides />} />
         <Route path="/changepassword" element={<ChangePassword />} />
         <Route path="/mybookings" element={<MyBookings />} />

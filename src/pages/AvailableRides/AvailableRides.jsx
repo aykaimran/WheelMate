@@ -95,7 +95,7 @@ const AvailableRides = () => {
             </div>
 
             <div className="ride-actions">
-              <Link to={`/ride/${ride.id}`} className="view-btn">
+              <Link to={`viewdetails/${ride.id}`} className="view-btn">
                 View Details
               </Link>
               <button className="book-btn">Book Seat</button>
