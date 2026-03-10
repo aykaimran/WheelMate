@@ -6,11 +6,11 @@ import Login from './pages/Login/Login'
 import Dashboard from './pages/Dashboard/Dashboard'
 import Register from './pages/Register/Register'
 import PostRides from './pages/Postrides'
-import RequestRide from './pages/RequestRide'
+import RequestRide from './pages/RequestRide/RequestRide'
 import ViewDetails from './pages/RideDetail/ViewDetails'
 import AvailableRides from './pages/AvailableRides/AvailableRides'
 import ChangePassword from './pages/ChangePassword/ChangePassword'
-import MyBookings from './pages/MyBookings'
+import MyBookings from './pages/MyBookings/MyBookings'
 function App() {
 
   return (
