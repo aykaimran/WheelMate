@@ -45,8 +45,6 @@ const AvailableRides = () => {
       price: "Rs. 120"
     }
   ]
-
-
   const navigate=useNavigate();
   return (
     <div className="rides-container">
@@ -98,7 +96,9 @@ const AvailableRides = () => {
               <Link to={`viewdetails/${ride.id}`} className="view-btn">
                 View Details
               </Link>
-              <button className="book-btn">Book Seat</button>
+              <button className="book-btn" onClick={() => navigate('/bookseat')}>
+                Book Seat
+              </button>
             </div>
           </div>
         ))}
