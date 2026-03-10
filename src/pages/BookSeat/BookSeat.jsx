@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './BookSeat.css'
+import { Link } from 'react-router-dom'
 
 const BookSeat = () => {
   const [showMessage, setShowMessage] = useState(false)
@@ -34,6 +35,9 @@ const BookSeat = () => {
         <button onClick={handleBooking} className="book-btn-new">
           Confirm Booking
         </button>
+        <div className="actions">
+          <Link to="/availablerides" className="secondary-btn">Back</Link>
+        </div>
       </div>
 
       {showMessage && (

@@ -1,8 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import './ViewDetails.css'
- 
-// not correct
+
 const ViewDetails = () => {
   const ride = {
     id: 1,
@@ -13,72 +12,35 @@ const ViewDetails = () => {
     seats: 3,
     vehicle: "Toyota Corolla",
     contact: "0333-1234567",
-    notes: "AC will be on. Usually leave by 8:15 AM sharp. Don't be late!",
+    notes: "AC will be on. Usually leave by 8:15 AM sharp",
     driverBio: "Final year CS student. Likes driving and good conversation."
   }
 
   return (
     <div className="details-container">
       <div className="details-card">
-        <div className="details-header">
-          <h2>Ride Details</h2>
-          <Link to="/availablerides" className="back-link">← Back to Rides</Link>
-        </div>
+        <h2>Ride Details</h2>
 
         <div className="ride-info">
-          <div className="info-row">
-            <span className="info-label">Driver:</span>
-            <span className="info-value driver-name">{ride.driver}</span>
+          <p><strong>Driver:</strong> {ride.driver}</p>
+          <p><strong>From:</strong> {ride.pickup}</p>
+          <p><strong>To:</strong> {ride.destination}</p>
+          <p><strong>Time:</strong> {ride.time}</p>
+          <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+          <p><strong>Seats:</strong> {ride.seats} left</p>
+          <p><strong>Contact:</strong> {ride.contact}</p>
+          
+          <div className="notes">
+            <p><strong>Notes:</strong> {ride.notes}</p>
           </div>
 
-          <div className="info-row">
-            <span className="info-label">From:</span>
-            <span className="info-value">{ride.pickup}</span>
-          </div>
-
-          <div className="info-row">
-            <span className="info-label">To:</span>
-            <span className="info-value">{ride.destination}</span>
-          </div>
-
-          <div className="info-row">
-            <span className="info-label">Departure:</span>
-            <span className="info-value time-badge">{ride.time}</span>
-          </div>
-
-          <div className="info-row">
-            <span className="info-label">Vehicle:</span>
-            <span className="info-value vehicle-badge">{ride.vehicle}</span>
-          </div>
-
-          <div className="info-row">
-            <span className="info-label">Available Seats:</span>
-            <span className="info-value seats-badge">{ride.seats} seats left</span>
-          </div>
-
-          <div className="info-row">
-            <span className="info-label">Contact:</span>
-            <span className="info-value contact">{ride.contact}</span>
-          </div>
-
-          <div className="notes-section">
-            <span className="info-label">Notes:</span>
-            <p className="notes-text">{ride.notes}</p>
+          <div className="driver-bio">
+            <p><strong>About Driver:</strong> {ride.driverBio}</p>
           </div>
         </div>
 
-        <div className="driver-profile">
-          <h3>About the Driver</h3>
-          <p>{ride.driverBio}</p>
-        </div>
-
-        <div className="details-actions">
-          <Link to="/availablerides" className="secondary-btn">
-            ← Other Rides
-          </Link>
-          <button className="primary-btn">
-            Book This Ride
-          </button>
+        <div className="actions">
+          <Link to="/availablerides" className="secondary-btn">Back</Link>
         </div>
       </div>
     </div>
