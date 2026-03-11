@@ -5,6 +5,7 @@
   box-sizing: border-box;
 }
 
+
 #root {
   width: 100%;
   margin: 0;
@@ -47,3 +48,4 @@
 .read-the-docs {
   color: #888;
 }
+

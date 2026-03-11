@@ -29,6 +29,7 @@
   align-items: center;
   gap: 0.5rem;
   transition: transform 0.2s ease;
+  margin-right: 3rem;
 }
 
 .nav-brand:hover {

@@ -1,0 +1,8 @@
+@import "tailwindcss";
+a, .nav-link, Link {
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
