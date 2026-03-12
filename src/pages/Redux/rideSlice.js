@@ -16,11 +16,11 @@ const rideSlice = createSlice({
     },
 
     reducers: {
-        storeRides: (state, action) => {
+        storerides: (state, action) => {
             state.rides = action.payload
         },
 
-        addNewRide: (state, action) => {
+        addnewride: (state, action) => {
             const newRide = {
                 id: Date.now().toString(),
                 ...action.payload,
@@ -32,14 +32,14 @@ const rideSlice = createSlice({
             state.rides.unshift(newRide)
         },
 
-        bookRide: (state, action) => {
-            const { rideId, userId, seatsRequested, passengerInfo } = action.payload
+        bookARide: (state, action) => {
+            const { rideId, useremail, seatsRequested, passengerInfo } = action.payload
             const ride = state.rides.find(r => r.id === rideId)
             if (ride && ride.availableSeats >= seatsRequested) {
                 const booking = {
                     id: Date.now().toString(),
                     rideId,
-                    userId,
+                    useremail,
                     seats: seatsRequested,
                     passengerInfo,
                     status: 'confirmed',
@@ -70,9 +70,9 @@ const rideSlice = createSlice({
         },
 
         getuserbookings: (state, action) => {
-            const userId = action.payload
+            const useremail = action.payload
             state.userbookings = state.riderequests.filter(
-                booking => booking.userId === userId
+                booking => booking.useremail === useremail
             )
         },
 
@@ -113,9 +113,9 @@ const rideSlice = createSlice({
 })
 
 export const {
-    storeRides,
-    addNewRide,
-    bookRide,
+    storerides,
+    addnewride,
+    bookARide,
     updateSeatAvailability,
     storeriderequests,
     getuserbookings,

@@ -17,10 +17,12 @@ const userSlice = createSlice({
                 name: action.payload.name || ''
             }
 
-            state.userProfiles[newUser.email] = newUser
-            state.currentUser = newUser
-            state.isLoggedIn = true
-            state.error = null
+            if (state.userProfiles[newUser.email]) {
+                state.error = 'User already exists'
+            } else {
+                state.userProfiles[newUser.email] = newUser
+                state.error = null
+            }
         },
 
         login: (state, action) => {
@@ -33,6 +35,8 @@ const userSlice = createSlice({
                 state.isLoggedIn = true
                 state.error = null
             } else {
+                state.isLoggedIn = false  
+                state.currentUser = null  
                 state.error = 'Invalid email or password'
             }
         },
@@ -90,7 +94,6 @@ export const {
 export const selectCurrentUser = (state) => state.user.currentUser
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn
 export const selectUserProfile = (useremail) => (state) => state.user.userProfiles[useremail]
-export const selectUserLoading = (state) => state.user.loading
 export const selectUserError = (state) => state.user.error
 
 export default userSlice.reducer

@@ -1,10 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import './Dashboard.css'
+import { useSelector } from 'react-redux'
+import { selectIsLoggedIn } from '../Redux/userSlice'
 
 const Dashboard = () => {
-  const isLoggedIn = false;
-
+  const isLoggedIn = useSelector(selectIsLoggedIn)
   return (
     <div className="dashboard">
       <div className="hero-section">
