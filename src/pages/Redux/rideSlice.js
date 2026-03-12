@@ -1,76 +1,76 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialRides = [
-  {
-    id: "1",
-    driver: "Ali Raza",
-    pickup: "Gulshan Campus",
-    destination: "DHA Phase 6",
-    time: "8:30 AM",
-    date: "2024-03-15",
-    availableSeats: 3,
-    bookedSeats: 0,
-    vehicle: "Toyota Corolla",
-    price: "Rs. 150",
-    driverEmail: "ali@example.com",
-    status: 'active',
-    contact: "03001234567",
-    driverBio: "Ali is a friendly driver with 5 years of experience. He loves meeting new people and sharing stories during rides.",
-    createdAt: "2024-03-10T10:00:00.000Z",
-    requests: []
-  },
-  {
-    id: "2",
-    driver: "Sara Khan",
-    pickup: "Main Campus",
-    destination: "North Nazimabad",
-    time: "9:15 AM",
-    date: "2024-03-15",
-    availableSeats: 2,
-    bookedSeats: 0,
-    vehicle: "Honda Civic",
-    price: "Rs. 200",
-    driverEmail: "sara@example.com",
-    status: 'active',
-    contact: "03007654321",
-    driverBio: "Sara is a punctual and reliable driver. She enjoys driving and always ensures her passengers have a comfortable ride.",
-    createdAt: "2024-03-10T11:00:00.000Z",
-    requests: []
-  },
-  {
-    id: "3",
-    driver: "Ahmed Malik",
-    pickup: "Gulshan Campus",
-    destination: "Clifton",
-    time: "10:00 AM",
-    date: "2024-03-16",
-    availableSeats: 4,
-    bookedSeats: 0,
-    vehicle: "Suzuki Swift",
-    price: "Rs. 180",
-    driverEmail: "ahmed@example.com",
-    status: 'active',
-    contact: "03009876543",
-    driverBio: "Ahmed is a student driver who loves driving around the city. He is friendly and always up for a chat during the ride.",
-    createdAt: "2024-03-11T09:00:00.000Z",
-    requests: []
-  },
-  {
-    id: "4",
-    driver: "Fatima Khan",
-    pickup: "Main Campus",
-    destination: "Gulistan-e-Johar",
-    time: "11:30 AM",
-    date: "2024-03-16",
-    availableSeats: 1,
-    bookedSeats: 0,
-    vehicle: "Cultus",
-    price: "Rs. 120",
-    driverEmail: "fatima@example.com",
-    status: 'active',
-    createdAt: "2024-03-11T14:00:00.000Z",
-    requests: []
-  }
+    {
+        id: "1",
+        driver: "Ali Raza",
+        pickup: "Gulshan Campus",
+        destination: "DHA Phase 6",
+        time: "8:30 AM",
+        date: "2024-03-15",
+        availableSeats: 3,
+        bookedSeats: 0,
+        vehicle: "Toyota Corolla",
+        price: "Rs. 150",
+        driverEmail: "ali@example.com",
+        status: 'active',
+        contact: "03001234567",
+        driverBio: "Ali is a friendly driver with 5 years of experience. He loves meeting new people and sharing stories during rides.",
+        createdAt: "2024-03-10T10:00:00.000Z",
+        requests: []
+    },
+    {
+        id: "2",
+        driver: "Sara Khan",
+        pickup: "Main Campus",
+        destination: "North Nazimabad",
+        time: "9:15 AM",
+        date: "2024-03-15",
+        availableSeats: 2,
+        bookedSeats: 0,
+        vehicle: "Honda Civic",
+        price: "Rs. 200",
+        driverEmail: "sara@example.com",
+        status: 'active',
+        contact: "03007654321",
+        driverBio: "Sara is a punctual and reliable driver. She enjoys driving and always ensures her passengers have a comfortable ride.",
+        createdAt: "2024-03-10T11:00:00.000Z",
+        requests: []
+    },
+    {
+        id: "3",
+        driver: "Ahmed Malik",
+        pickup: "Gulshan Campus",
+        destination: "Clifton",
+        time: "10:00 AM",
+        date: "2024-03-16",
+        availableSeats: 4,
+        bookedSeats: 0,
+        vehicle: "Suzuki Swift",
+        price: "Rs. 180",
+        driverEmail: "ahmed@example.com",
+        status: 'active',
+        contact: "03009876543",
+        driverBio: "Ahmed is a student driver who loves driving around the city. He is friendly and always up for a chat during the ride.",
+        createdAt: "2024-03-11T09:00:00.000Z",
+        requests: []
+    },
+    {
+        id: "4",
+        driver: "Fatima Khan",
+        pickup: "Main Campus",
+        destination: "Gulistan-e-Johar",
+        time: "11:30 AM",
+        date: "2024-03-16",
+        availableSeats: 1,
+        bookedSeats: 0,
+        vehicle: "Cultus",
+        price: "Rs. 120",
+        driverEmail: "fatima@example.com",
+        status: 'active',
+        createdAt: "2024-03-11T14:00:00.000Z",
+        requests: []
+    }
 ]
 
 const rideSlice = createSlice({
@@ -100,7 +100,8 @@ const rideSlice = createSlice({
                 createdAt: new Date().toISOString(),
                 bookedSeats: 0,
                 status: 'active',
-                requests: []
+                requests: [],
+                driverBio: action.payload.driverBio || `${action.payload.driver} is a friendly driver.` // Default bio
             }
             state.rides.unshift(newRide)
         },
@@ -108,6 +109,7 @@ const rideSlice = createSlice({
         bookARide: (state, action) => {
             const { rideId, useremail, seatsRequested, passengerInfo } = action.payload
             const ride = state.rides.find(r => r.id === rideId)
+
             if (ride && ride.availableSeats >= seatsRequested) {
                 const booking = {
                     id: Date.now().toString(),
@@ -116,17 +118,82 @@ const rideSlice = createSlice({
                     seats: seatsRequested,
                     passengerInfo,
                     status: 'confirmed',
-                    bookedAt: new Date().toISOString()
+                    bookedAt: new Date().toISOString(),
+                    rideDetails: {
+                        driver: ride.driver,
+                        pickup: ride.pickup,
+                        destination: ride.destination,
+                        time: ride.time,
+                        date: ride.date,
+                        price: ride.price,
+                        contact: ride.contact,
+                        vehicle: ride.vehicle
+                    }
                 }
+
                 state.riderequests.push(booking)
                 state.userbookings.push(booking)
+
                 ride.availableSeats -= seatsRequested
                 ride.bookedSeats += seatsRequested
                 state.error = null
-
             } else {
                 state.error = 'Not enough seats available'
             }
+        },
+
+        requestRide: (state, action) => {
+            const { rideId, useremail, seatsRequested, passengerInfo, requestDetails } = action.payload
+            const request = {
+                id: Date.now().toString(),
+                rideId,
+                useremail,
+                seats: seatsRequested,
+                passengerInfo,
+                status: 'pending',
+                type: 'ride-request',
+                requestedAt: new Date().toISOString(),
+                // Store request details directly on the booking object
+                pickup: requestDetails?.pickup || passengerInfo.pickup,
+                destination: requestDetails?.destination || passengerInfo.destination,
+                date: requestDetails?.date,
+                time: requestDetails?.time,
+                notes: passengerInfo.notes || '',
+            }
+
+            state.riderequests.push(request)
+            state.userbookings.push(request)
+            state.error = null
+        },
+
+        getuserbookings: (state, action) => {
+            const useremail = action.payload
+            const bookings = state.riderequests.filter(
+                booking => booking.useremail === useremail
+            )
+
+            state.userbookings = bookings.map(booking => {
+                if (booking.rideId && !booking.rideId.startsWith('request-')) {
+                    const ride = state.rides.find(r => r.id === booking.rideId)
+                    if (ride) {
+                        return {
+                            ...booking,
+                            rideDetails: {
+                                driver: ride.driver,
+                                pickup: ride.pickup,
+                                destination: ride.destination,
+                                time: ride.time,
+                                date: ride.date,
+                                contact: ride.contact,
+                                vehicle: ride.vehicle,
+                                price: ride.price,
+                                driverBio: ride.driverBio
+                            }
+                        }
+                    }
+                }
+                return booking
+            })
         },
 
         updateSeatAvailability: (state, action) => {
@@ -142,12 +209,6 @@ const rideSlice = createSlice({
             state.riderequests = action.payload
         },
 
-        getuserbookings: (state, action) => {
-            const useremail = action.payload
-            state.userbookings = state.riderequests.filter(
-                booking => booking.useremail === useremail
-            )
-        },
 
         cancelBooking: (state, action) => {
             const { bookingId, rideId } = action.payload
@@ -196,6 +257,7 @@ export const {
     searchRides,
     selectRide,
     setRidesError,
+    requestRide,
     clearRidesError
 } = rideSlice.actions
 

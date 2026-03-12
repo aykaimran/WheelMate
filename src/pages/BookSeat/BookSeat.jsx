@@ -1,25 +1,26 @@
 import React, { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectRideById, bookARide } from '../Redux/rideSlice'
+import { selectRideById, bookARide } from '../Redux/rideSlice'  // Use bookARide, not requestRide
 import { selectCurrentUser } from '../Redux/userSlice'
 import './BookSeat.css'
 import toast from 'react-hot-toast'
 
 const BookSeat = () => {
-  const { id } = useParams() 
+  const { id } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  
   const ride = useSelector(selectRideById(id))
   const currentUser = useSelector(selectCurrentUser)
   
   const [selectedSeats, setSelectedSeats] = useState('1')
   const [showMessage, setShowMessage] = useState(false)
 
-  const seatselectoption = []
+  const seatOptions = []
   if (ride) {
     for (let i = 1; i <= ride.availableSeats; i++) {
-      seatselectoption.push(
+      seatOptions.push(
         <option key={i} value={i}>
           {i} seat{i > 1 ? 's' : ''}
         </option>
@@ -29,11 +30,10 @@ const BookSeat = () => {
 
   const handleBooking = () => {
     if (!currentUser) {
-      toast.error('please login to book a seat')
+      toast.error('Please login to book a seat')
       navigate('/login')
       return
     }
-
     dispatch(bookARide({
       rideId: id,
       useremail: currentUser.email,
@@ -45,7 +45,7 @@ const BookSeat = () => {
     }))
     
     setShowMessage(true)
-    toast.success(`Booked ${selectedSeats} seat(s)!`)
+    toast.success(`${selectedSeats} seat(s) booked successfully!`)
     
     setTimeout(() => {
       setShowMessage(false)
@@ -85,7 +85,7 @@ const BookSeat = () => {
           value={selectedSeats}
           onChange={(e) => setSelectedSeats(e.target.value)}
         >
-          {seatselectoption}
+          {seatOptions}
         </select>
 
         <button onClick={handleBooking} className="book-btn">
@@ -99,7 +99,7 @@ const BookSeat = () => {
 
       {showMessage && (
         <div className="success-message">
-          Done! {selectedSeats} seat(s) booked. You owe the driver chai now !
+          Booking confirmed! Check My Bookings
         </div>
       )}
     </div>

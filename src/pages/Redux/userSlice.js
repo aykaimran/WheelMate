@@ -35,8 +35,8 @@ const userSlice = createSlice({
                 state.isLoggedIn = true
                 state.error = null
             } else {
-                state.isLoggedIn = false  
-                state.currentUser = null  
+                state.isLoggedIn = false
+                state.currentUser = null
                 state.error = 'Invalid email or password'
             }
         },
@@ -48,14 +48,19 @@ const userSlice = createSlice({
         },
 
         changepassword: (state, action) => {
-            const { useremail, oldPassword, newPassword } = action.payload
+            const { email, oldPassword, newPassword } = action.payload  // Use email, not useremail
 
-            if (state.userProfiles[useremail]) {
-                state.userProfiles[useremail].password = newPassword
-                if (state.currentUser?.email === useremail) {
-                    state.currentUser.password = newPassword
+            const user = state.userProfiles[email]
+            if (user) {
+                if (user.password === oldPassword) {
+                    user.password = newPassword
+                    if (state.currentUser?.email === email) {
+                        state.currentUser.password = newPassword
+                    }
+                    state.error = null
+                } else {
+                    state.error = 'Old password is incorrect'
                 }
-                state.error = null
             } else {
                 state.error = 'User not found'
             }
