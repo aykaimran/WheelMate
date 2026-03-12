@@ -1,9 +1,82 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+const initialRides = [
+  {
+    id: "1",
+    driver: "Ali Raza",
+    pickup: "Gulshan Campus",
+    destination: "DHA Phase 6",
+    time: "8:30 AM",
+    date: "2024-03-15",
+    availableSeats: 3,
+    bookedSeats: 0,
+    vehicle: "Toyota Corolla",
+    price: "Rs. 150",
+    driverEmail: "ali@example.com",
+    status: 'active',
+    contact: "03001234567",
+    driverBio: "Ali is a friendly driver with 5 years of experience. He loves meeting new people and sharing stories during rides.",
+    createdAt: "2024-03-10T10:00:00.000Z",
+    requests: []
+  },
+  {
+    id: "2",
+    driver: "Sara Khan",
+    pickup: "Main Campus",
+    destination: "North Nazimabad",
+    time: "9:15 AM",
+    date: "2024-03-15",
+    availableSeats: 2,
+    bookedSeats: 0,
+    vehicle: "Honda Civic",
+    price: "Rs. 200",
+    driverEmail: "sara@example.com",
+    status: 'active',
+    contact: "03007654321",
+    driverBio: "Sara is a punctual and reliable driver. She enjoys driving and always ensures her passengers have a comfortable ride.",
+    createdAt: "2024-03-10T11:00:00.000Z",
+    requests: []
+  },
+  {
+    id: "3",
+    driver: "Ahmed Malik",
+    pickup: "Gulshan Campus",
+    destination: "Clifton",
+    time: "10:00 AM",
+    date: "2024-03-16",
+    availableSeats: 4,
+    bookedSeats: 0,
+    vehicle: "Suzuki Swift",
+    price: "Rs. 180",
+    driverEmail: "ahmed@example.com",
+    status: 'active',
+    contact: "03009876543",
+    driverBio: "Ahmed is a student driver who loves driving around the city. He is friendly and always up for a chat during the ride.",
+    createdAt: "2024-03-11T09:00:00.000Z",
+    requests: []
+  },
+  {
+    id: "4",
+    driver: "Fatima Khan",
+    pickup: "Main Campus",
+    destination: "Gulistan-e-Johar",
+    time: "11:30 AM",
+    date: "2024-03-16",
+    availableSeats: 1,
+    bookedSeats: 0,
+    vehicle: "Cultus",
+    price: "Rs. 120",
+    driverEmail: "fatima@example.com",
+    status: 'active',
+    createdAt: "2024-03-11T14:00:00.000Z",
+    requests: []
+  }
+]
+
 const rideSlice = createSlice({
     name: 'rides',
     initialState: {
-        rides: [],
+        rides: initialRides,
         riderequests: [],
         userbookings: [],
         error: null,

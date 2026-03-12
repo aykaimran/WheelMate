@@ -1,5 +1,6 @@
 import React from 'react'
 import './PostRides.css'
+import { Link } from 'react-router-dom'
 
 const PostRides = () => {
   const [seats, setSeats] = React.useState(1)
@@ -94,7 +95,11 @@ const PostRides = () => {
         <button type="submit" className="submit-btn">
           Post Ride
         </button>
+      
       </form>
+         <div className="actions">
+          <Link to="/availablerides" className="secondary-btn">Back</Link>
+        </div>
     </div>
   )
 }

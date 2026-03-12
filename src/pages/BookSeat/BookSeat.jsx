@@ -1,48 +1,105 @@
 import React, { useState } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectRideById, bookARide } from '../Redux/rideSlice'
+import { selectCurrentUser } from '../Redux/userSlice'
 import './BookSeat.css'
-import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const BookSeat = () => {
+  const { id } = useParams() 
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const ride = useSelector(selectRideById(id))
+  const currentUser = useSelector(selectCurrentUser)
+  
+  const [selectedSeats, setSelectedSeats] = useState('1')
   const [showMessage, setShowMessage] = useState(false)
 
+  const seatselectoption = []
+  if (ride) {
+    for (let i = 1; i <= ride.availableSeats; i++) {
+      seatselectoption.push(
+        <option key={i} value={i}>
+          {i} seat{i > 1 ? 's' : ''}
+        </option>
+      )
+    }
+  }
+
   const handleBooking = () => {
+    if (!currentUser) {
+      toast.error('please login to book a seat')
+      navigate('/login')
+      return
+    }
+
+    dispatch(bookARide({
+      rideId: id,
+      useremail: currentUser.email,
+      seatsRequested: parseInt(selectedSeats),
+      passengerInfo: {
+        name: currentUser.name,
+        email: currentUser.email
+      }
+    }))
+    
     setShowMessage(true)
-    setTimeout(() => setShowMessage(false), 3000)
+    toast.success(`Booked ${selectedSeats} seat(s)!`)
+    
+    setTimeout(() => {
+      setShowMessage(false)
+      navigate('/mybookings')
+    }, 2000)
+  }
+
+  if (!ride) {
+    return (
+      <div className="book-container">
+        <h2>Ride Not Found</h2>
+        <Link to="/availablerides" className="secondary-btn">Back to Rides</Link>
+      </div>
+    )
   }
 
   return (
     <div className="book-container">
       <h2>Book Your Seat</h2>
-      {/* hardcoded ride details for now, will be dynamic later based on the ride selected from available rides page */}
+      
       <div className="ride-summary">
         <h3>Ride Details</h3>
-        <p><strong>Driver:</strong> Ali Raza</p>
-        <p><strong>From:</strong> Gulshan Campus</p>
-        <p><strong>To:</strong> DHA Phase 6</p>
-        <p><strong>Time:</strong> 8:30 AM</p>
-        <p><strong>Available Seats:</strong> 3</p>
+        <p><strong>Driver:</strong> {ride.driver}</p>
+        <p><strong>From:</strong> {ride.pickup}</p>
+        <p><strong>To:</strong> {ride.destination}</p>
+        <p><strong>Time:</strong> {ride.time}</p>
+        <p><strong>Date:</strong> {ride.date}</p>
+        <p><strong>Available Seats:</strong> {ride.availableSeats}</p>
+        <p><strong>Price:</strong> {ride.price}</p>
       </div>
 
       <div className="booking-section">
         <p>How many seats would you like to book?</p>
-        {/* hardcoded for now*/}
-        <select className="seat-select"> 
-          <option>1 seat</option>
-          <option>2 seats</option>
-          <option>3 seats</option>
+        
+        <select 
+          className="seat-select"
+          value={selectedSeats}
+          onChange={(e) => setSelectedSeats(e.target.value)}
+        >
+          {seatselectoption}
         </select>
 
-        <button onClick={handleBooking} className="book-btn-new">
+        <button onClick={handleBooking} className="book-btn">
           Confirm Booking
         </button>
-        <div className="actions">
-          <Link to="/availablerides" className="secondary-btn">Back</Link>
+        
+        <div className="actions" style={{ marginTop: '15px' }}>
+          <Link to={`/viewdetails/${id}`} className="secondary-btn">← Back to Details</Link>
         </div>
       </div>
 
       {showMessage && (
         <div className="success-message">
-          ✓ Done! You owe the driver chai now
+          Done! {selectedSeats} seat(s) booked. You owe the driver chai now !
         </div>
       )}
     </div>

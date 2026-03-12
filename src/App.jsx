@@ -53,7 +53,7 @@ function App() {
         <Route path="/availablerides" element={<AvailableRides />} />
         <Route path="/changepassword" element={<ChangePassword />} />
         <Route path="/mybookings" element={<MyBookings />} />
-        <Route path="/bookseat" element={<BookSeat />} />
+        <Route path="/bookseat/:id" element={<BookSeat />} />
 
 
       </Routes>
