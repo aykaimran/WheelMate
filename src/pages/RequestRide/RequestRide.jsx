@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCurrentUser } from '../Redux/userSlice'
-import { requestRide } from '../Redux/rideSlice'  // Import requestRide
+import { requestRide } from '../Redux/rideSlice'
 import toast from 'react-hot-toast'
 import './RequestRide.css'
 
@@ -10,6 +10,7 @@ const RequestRide = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
     pickup: '',
@@ -20,61 +21,177 @@ const RequestRide = () => {
     notes: ''
   })
 
+  const [errors, setErrors] = useState({
+    pickup: '',
+    destination: '',
+    date: '',
+    time: '',
+    seats: ''
+  })
+
+  useEffect(() => {
+    if (!currentUser) {
+      toast.error('Please login to request a ride')
+      navigate('/login')
+    }
+  }, [currentUser, navigate])
+
+  const validatePickup = (value) => {
+    if (!value) return 'Pickup location is required'
+    if (value.length < 3) return 'Pickup location must be at least 3 characters'
+    return ''
+  }
+
+  const validateDestination = (value) => {
+    if (!value) return 'Destination is required'
+    if (value.length < 3) return 'Destination must be at least 3 characters'
+    return ''
+  }
+
+  const validateDate = (value) => {
+    if (!value) return 'Date is required'
+    const selectedDate = new Date(value)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    if (selectedDate < today) return 'Date cannot be in the past'
+    return ''
+  }
+
+  const validateTime = (value) => {
+    if (!value) return 'Time is required'
+    return ''
+  }
+
+  const validateSeats = (value) => {
+    const seatsNum = parseInt(value)
+    if (isNaN(seatsNum) || seatsNum < 1) return 'Please select at least 1 seat'
+    if (seatsNum > 8) return 'Maximum 8 seats allowed'
+    return ''
+  }
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+
+    let error = ''
+    switch(name) {
+      case 'pickup':
+        error = validatePickup(value)
+        break
+      case 'destination':
+        error = validateDestination(value)
+        break
+      case 'date':
+        error = validateDate(value)
+        break
+      case 'time':
+        error = validateTime(value)
+        break
+      case 'seats':
+        error = validateSeats(value)
+        break
+      default:
+        break
+    }
+    setErrors({ ...errors, [name]: error })
+  }
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target
+    let error = ''
+    switch(name) {
+      case 'pickup':
+        error = validatePickup(value)
+        break
+      case 'destination':
+        error = validateDestination(value)
+        break
+      case 'date':
+        error = validateDate(value)
+        break
+      case 'time':
+        error = validateTime(value)
+        break
+      case 'seats':
+        error = validateSeats(value)
+        break
+      default:
+        break
+    }
+    setErrors({ ...errors, [name]: error })
+  }
+
+  const validateForm = () => {
+    const pickupError = validatePickup(formData.pickup)
+    const destinationError = validateDestination(formData.destination)
+    const dateError = validateDate(formData.date)
+    const timeError = validateTime(formData.time)
+    const seatsError = validateSeats(formData.seats)
+
+    setErrors({
+      pickup: pickupError,
+      destination: destinationError,
+      date: dateError,
+      time: timeError,
+      seats: seatsError
     })
+
+    return !pickupError && !destinationError && !dateError && !timeError && !seatsError
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    // Check if user is logged in
-    if (!currentUser) {
-      toast.error('Please login to request a ride')
-      navigate('/login')
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form')
       return
     }
 
-    // Validate required fields
-    if (!formData.pickup || !formData.destination || !formData.date || !formData.time) {
-      toast.error('Please fill in all required fields')
+    if (isSubmitting) {
+      toast.loading('Processing your request...')
       return
     }
 
-    // Create a ride request (this will be visible to all drivers)
-    // In a real app, this would be stored in a "requests" collection
-    // For now, we'll create a pending booking
-    dispatch(requestRide({
-      rideId: 'request-' + Date.now(), // Temporary ID
-      useremail: currentUser.email,
-      seatsRequested: parseInt(formData.seats),
-      passengerInfo: {
-        name: currentUser.name,
-        email: currentUser.email,
-        notes: formData.notes
-      },
-      requestDetails: {
-        pickup: formData.pickup,
-        destination: formData.destination,
-        date: formData.date,
-        time: formData.time
-      }
-    }))
+    setIsSubmitting(true)
 
-    toast.success('Ride request sent to all drivers!')
-    navigate('/mybookings')
+    try {
+      dispatch(requestRide({
+        rideId: 'request-' + Date.now(),
+        useremail: currentUser.email,
+        seatsRequested: parseInt(formData.seats),
+        passengerInfo: {
+          name: currentUser.name,
+          email: currentUser.email,
+          notes: formData.notes.trim() || 'No special requirements'
+        },
+        requestDetails: {
+          pickup: formData.pickup.trim(),
+          destination: formData.destination.trim(),
+          date: formData.date,
+          time: formData.time
+        }
+      }))
+
+      toast.success('Ride request sent to all drivers!')
+      setTimeout(() => {
+        navigate('/mybookings')
+      }, 1500)
+    } catch (error) {
+      toast.error('Failed to send request. Please try again.')
+      setIsSubmitting(false)
+    }
   }
-
-  const today = new Date().toISOString().split('T')[0]
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const minDate = tomorrow.toISOString().split('T')[0]
 
   return (
     <div className="request-container">
       <h2>Request a Ride</h2>
       <p className="request-subtitle">Post your request - drivers will see it and can accept</p>
       
-      <form className="request-form" onSubmit={handleSubmit}>
+      <form className="request-form" onSubmit={handleSubmit} noValidate>
         <div className="form-group">
           <label>Pickup Location:</label>
           <input 
@@ -83,8 +200,12 @@ const RequestRide = () => {
             placeholder="e.g. Gulshan Campus"
             value={formData.pickup}
             onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.pickup ? 'input-error' : ''}
             required
+            disabled={isSubmitting}
           />
+          {errors.pickup && <p className="error-message">{errors.pickup}</p>}
         </div>
 
         <div className="form-group">
@@ -95,8 +216,12 @@ const RequestRide = () => {
             placeholder="e.g. DHA Phase 6"
             value={formData.destination}
             onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.destination ? 'input-error' : ''}
             required
+            disabled={isSubmitting}
           />
+          {errors.destination && <p className="error-message">{errors.destination}</p>}
         </div>
 
         <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
@@ -105,11 +230,15 @@ const RequestRide = () => {
             <input 
               type="date" 
               name="date"
-              min={today}
+              min={minDate}
               value={formData.date}
               onChange={handleChange}
+              onBlur={handleBlur}
+              className={errors.date ? 'input-error' : ''}
               required
+              disabled={isSubmitting}
             />
+            {errors.date && <p className="error-message">{errors.date}</p>}
           </div>
 
           <div className="form-group">
@@ -119,8 +248,12 @@ const RequestRide = () => {
               name="time"
               value={formData.time}
               onChange={handleChange}
+              onBlur={handleBlur}
+              className={errors.time ? 'input-error' : ''}
               required
+              disabled={isSubmitting}
             />
+            {errors.time && <p className="error-message">{errors.time}</p>}
           </div>
         </div>
 
@@ -130,27 +263,28 @@ const RequestRide = () => {
             name="seats"
             value={formData.seats}
             onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.seats ? 'input-error' : ''}
+            disabled={isSubmitting}
           >
-            <option value="1">1 seat</option>
-            <option value="2">2 seats</option>
-            <option value="3">3 seats</option>
-            <option value="4">4 seats</option>
+            {[1,2,3,4,5,6,7,8].map(num => (
+              <option key={num} value={num}>{num} seat{num > 1 ? 's' : ''}</option>
+            ))}
           </select>
+          {errors.seats && <p className="error-message">{errors.seats}</p>}
         </div>
 
         <div className="form-group">
           <label>Additional Notes:</label>
-          <textarea 
-            name="notes"
-            rows="3" 
-            placeholder="Any specific requirements..."
-            value={formData.notes}
-            onChange={handleChange}
+          <textarea  name="notes"  rows="3" 
+            placeholder="Any specific requirements? (e.g., need space for luggage, prefer quiet rides, etc.)"
+            value={formData.notes} onChange={handleChange} disabled={isSubmitting} maxLength={300}
           ></textarea>
+          <small className="form-text">{formData.notes.length}/300 characters</small>
         </div>
 
-        <button type="submit" className="submit-btn">
-          Post Ride Request
+        <button   type="submit"  className="submit-btn"  disabled={isSubmitting} >
+          {isSubmitting ? 'Sending Request...' : 'Post Ride Request'}
         </button>
       </form>
 

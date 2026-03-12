@@ -106,3 +106,18 @@
     font-size: 1.5rem;
   }
 }
+
+.form-input.input-error {
+  border-color: #f44336;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

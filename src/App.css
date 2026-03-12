@@ -49,3 +49,32 @@
   color: #888;
 }
 
+
+.form-input.input-error,
+select.input-error,
+textarea.input-error {
+  border-color: #f44336 !important;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.form-text {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.counter-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
