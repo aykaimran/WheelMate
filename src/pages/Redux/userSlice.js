@@ -1,0 +1,96 @@
+import { createSlice } from '@reduxjs/toolkit'
+
+const userSlice = createSlice({
+    name: 'user',
+    initialState: {
+        currentUser: null,
+        isLoggedIn: false,
+        userProfiles: {},
+        error: null
+    },
+
+    reducers: {
+        registerUser: (state, action) => {
+            const newUser = {
+                email: action.payload.email,
+                password: action.payload.password,
+                name: action.payload.name || ''
+            }
+
+            state.userProfiles[newUser.email] = newUser
+            state.currentUser = newUser
+            state.isLoggedIn = true
+            state.error = null
+        },
+
+        login: (state, action) => {
+            const { email, password } = action.payload
+            const user = Object.values(state.userProfiles).find(
+                u => u.email === email && u.password === password
+            )
+            if (user) {
+                state.currentUser = user
+                state.isLoggedIn = true
+                state.error = null
+            } else {
+                state.error = 'Invalid email or password'
+            }
+        },
+
+        logout: (state) => {
+            state.currentUser = null
+            state.isLoggedIn = false
+            state.error = null
+        },
+
+        changepassword: (state, action) => {
+            const { useremail, oldPassword, newPassword } = action.payload
+
+            if (state.userProfiles[useremail]) {
+                state.userProfiles[useremail].password = newPassword
+                if (state.currentUser?.email === useremail) {
+                    state.currentUser.password = newPassword
+                }
+                state.error = null
+            } else {
+                state.error = 'User not found'
+            }
+        },
+
+        storeUserProfile: (state, action) => {
+            const { email, profileData } = action.payload
+            if (!state.userProfiles[email]) {
+                state.userProfiles[email] = {}
+            }
+            state.userProfiles[email] = {
+                ...state.userProfiles[email],
+                ...profileData
+            }
+        },
+        setError: (state, action) => {
+            state.error = action.payload
+        },
+        clearError: (state) => {
+            state.error = null
+        }
+    }
+})
+
+export const {
+    registerUser,
+    login,
+    logout,
+    changepassword,
+    storeUserProfile,
+    setError,
+    clearError
+} = userSlice.actions
+
+//selectors
+export const selectCurrentUser = (state) => state.user.currentUser
+export const selectIsLoggedIn = (state) => state.user.isLoggedIn
+export const selectUserProfile = (useremail) => (state) => state.user.userProfiles[useremail]
+export const selectUserLoading = (state) => state.user.loading
+export const selectUserError = (state) => state.user.error
+
+export default userSlice.reducer
