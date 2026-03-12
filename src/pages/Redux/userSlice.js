@@ -6,7 +6,8 @@ const userSlice = createSlice({
         currentUser: null,
         isLoggedIn: false,
         userProfiles: {},
-        error: null
+        error: null,
+        passwordChangeSuccess: false
     },
 
     reducers: {
@@ -48,23 +49,26 @@ const userSlice = createSlice({
         },
 
         changepassword: (state, action) => {
-            const { email, oldPassword, newPassword } = action.payload  // Use email, not useremail
+    const { email, oldPassword, newPassword } = action.payload
 
-            const user = state.userProfiles[email]
-            if (user) {
-                if (user.password === oldPassword) {
-                    user.password = newPassword
-                    if (state.currentUser?.email === email) {
-                        state.currentUser.password = newPassword
-                    }
-                    state.error = null
-                } else {
-                    state.error = 'Old password is incorrect'
-                }
-            } else {
-                state.error = 'User not found'
+    const user = state.userProfiles[email]
+    if (user) {
+        if (user.password === oldPassword) {
+            user.password = newPassword
+            if (state.currentUser?.email === email) {
+                state.currentUser.password = newPassword
             }
-        },
+            state.error = null
+            state.passwordChangeSuccess = true  
+        } else {
+            state.error = 'Old password is incorrect'
+            state.passwordChangeSuccess = false
+        }
+    } else {
+        state.error = 'User not found'
+        state.passwordChangeSuccess = false
+    }
+},
 
         storeUserProfile: (state, action) => {
             const { email, profileData } = action.payload
@@ -100,5 +104,6 @@ export const selectCurrentUser = (state) => state.user.currentUser
 export const selectIsLoggedIn = (state) => state.user.isLoggedIn
 export const selectUserProfile = (useremail) => (state) => state.user.userProfiles[useremail]
 export const selectUserError = (state) => state.user.error
+export const selectPasswordChangeSuccess = (state) => state.user.passwordChangeSuccess
 
 export default userSlice.reducer
