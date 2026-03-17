@@ -117,7 +117,7 @@ const rideSlice = createSlice({
                     useremail,
                     seats: seatsRequested,
                     passengerInfo,
-                    status: 'confirmed',
+                    status: 'booked',
                     bookedAt: new Date().toISOString(),
                     rideDetails: {
                         driver: ride.driver,
@@ -144,27 +144,70 @@ const rideSlice = createSlice({
 
         requestRide: (state, action) => {
             const { rideId, useremail, seatsRequested, passengerInfo, requestDetails } = action.payload
+
             const request = {
                 id: Date.now().toString(),
                 rideId,
                 useremail,
                 seats: seatsRequested,
                 passengerInfo,
-                status: 'pending',
+                status: 'requested',
                 type: 'ride-request',
                 requestedAt: new Date().toISOString(),
-                // Store request details directly on the booking object
-                pickup: requestDetails?.pickup || passengerInfo.pickup,
-                destination: requestDetails?.destination || passengerInfo.destination,
-                date: requestDetails?.date,
-                time: requestDetails?.time,
-                notes: passengerInfo.notes || '',
+                pickup: requestDetails.pickup,
+                destination: requestDetails.destination,
+                date: requestDetails.date,
+                time: requestDetails.time,
+                notes: passengerInfo.notes || ''
             }
 
             state.riderequests.push(request)
             state.userbookings.push(request)
-            state.error = null
+            state.rides.unshift({
+                id: rideId,
+                driver: "Request by " + passengerInfo.name,
+                pickup: requestDetails.pickup,
+                destination: requestDetails.destination,
+                time: requestDetails.time,
+                date: requestDetails.date,
+                availableSeats: seatsRequested,
+                bookedSeats: 0,
+                vehicle: "N/A",
+                price: "Negotiable",
+                driverEmail: useremail,
+                status: 'requested',
+                isRequest: true,
+                requests: []
+            })
         },
+        acceptRequest: (state, action) => {
+    const rideId = action.payload
+
+    const ride = state.rides.find(r => r.id === rideId)
+
+    if (ride && ride.isRequest) {
+        ride.status = 'active'
+        ride.isRequest = false
+        ride.driver = "Driver Accepted"
+        
+        // Remove the ride request from the rides array
+        state.rides = state.rides.filter(r => r.id !== rideId)
+
+        state.userbookings = state.userbookings.map(b => {
+            if (b.rideId === rideId) {
+                return { ...b, status: 'accepted' }
+            }
+            return b
+        })
+
+        state.riderequests = state.riderequests.map(b => {
+            if (b.rideId === rideId) {
+                return { ...b, status: 'accepted' }
+            }
+            return b
+        })
+    }
+},
 
         getuserbookings: (state, action) => {
             const useremail = action.payload
@@ -258,7 +301,8 @@ export const {
     selectRide,
     setRidesError,
     requestRide,
-    clearRidesError
+    clearRidesError,
+    acceptRequest
 } = rideSlice.actions
 
 export const selectAllRides = (state) => state.rides.rides

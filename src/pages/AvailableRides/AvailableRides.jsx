@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedIn } from '../Redux/userSlice'
+import { acceptRequest } from '../Redux/rideSlice'
 import {
   selectAllRides,
   selectFilteredRides,
   searchRides
 } from '../Redux/rideSlice'
 import './AvailableRides.css'
+import toast from 'react-hot-toast'
 
 const AvailableRides = () => {
   const isLoggedIn = useSelector(selectIsLoggedIn)
@@ -128,6 +130,9 @@ const AvailableRides = () => {
               <div className="ride-header">
                 <h3 className="driver-name">{ride.driver}</h3>
                 <span className="vehicle-type">{ride.vehicle}</span>
+                {ride.isRequest && (
+                  <span className="request-badge">Requested Ride</span>
+                )}
               </div>
 
               <div className="ride-details">
@@ -163,11 +168,25 @@ const AvailableRides = () => {
                 <Link to={`/viewdetails/${ride.id}`} className="view-btn">
                   View Details
                 </Link>
-                <button className="book-btn" onClick={() => navigate(`/bookseat/${ride.id}`)}
-                  disabled={ride.availableSeats === 0}
-                >
-                  {ride.availableSeats === 0 ? 'Full' : 'Book Seat'}
-                </button>
+                {ride.isRequest ? (
+                  <button
+                    className="book-btn"
+                    onClick={() => {
+    dispatch(acceptRequest(ride.id))
+    toast.success('Ride request accepted!')
+}}
+                  >
+                    Accept Request
+                  </button>
+                ) : (
+                  <button
+                    className="book-btn"
+                    onClick={() => navigate(`/bookseat/${ride.id}`)}
+                    disabled={ride.availableSeats === 0}
+                  >
+                    {ride.availableSeats === 0 ? 'Full' : 'Book Seat'}
+                  </button>
+                )}
               </div>
             </div>
           ))}

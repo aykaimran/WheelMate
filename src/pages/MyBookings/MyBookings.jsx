@@ -38,8 +38,9 @@ const MyBookings = () => {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'confirmed': return 'status-confirmed'
-      case 'pending': return 'status-pending'
+      case 'requested': return 'status-pending'
+case 'accepted': return 'status-confirmed'
+case 'booked': return 'status-confirmed'
       case 'completed': return 'status-completed'
       case 'cancelled': return 'status-cancelled'
       default: return ''
@@ -48,8 +49,9 @@ const MyBookings = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'confirmed': return ' Confirmed'
-      case 'pending': return 'Pending Approval'
+      case 'requested': return 'Requested'
+case 'accepted': return 'Accepted by Driver'
+case 'booked': return 'Booked'
       case 'completed': return ' Completed'
       case 'cancelled': return ' Cancelled'
       default: return status
