@@ -190,7 +190,7 @@ const rideSlice = createSlice({
         ride.isRequest = false
         ride.driver = "Driver Accepted"
         
-        // Remove the ride request from the rides array
+        //removes the ride request from the rides array
         state.rides = state.rides.filter(r => r.id !== rideId)
 
         state.userbookings = state.userbookings.map(b => {
@@ -326,8 +326,7 @@ export const selectFilteredRides = (state) => {
 }
 export const selectuserbookings = (state) => state.rides.userbookings
 export const selectSelectedRide = (state) => state.rides.selectedRide
-export const selectRideById = (rideId) => (state) =>
-    state.rides.rides.find(r => r.id === rideId)
+export const selectRideById = (rideId) => (state) => state.rides.rides.find(r => r.id === rideId)
 export const selectRidesLoading = (state) => state.rides.loading
 export const selectRidesError = (state) => state.rides.error
 export const selectRideproperties = (state) => state.rides.properties

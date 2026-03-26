@@ -172,9 +172,9 @@ const AvailableRides = () => {
                   <button
                     className="book-btn"
                     onClick={() => {
-    dispatch(acceptRequest(ride.id))
-    toast.success('Ride request accepted!')
-}}
+                      dispatch(acceptRequest(ride.id))
+                      toast.success('Ride request accepted!')
+                    }}
                   >
                     Accept Request
                   </button>

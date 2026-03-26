@@ -68,7 +68,7 @@ const userSlice = createSlice({
         state.error = 'User not found'
         state.passwordChangeSuccess = false
     }
-},
+  },
 
         storeUserProfile: (state, action) => {
             const { email, profileData } = action.payload

@@ -143,9 +143,6 @@ const Login = () => {
 
         <div className="login-footer" style={{ marginTop: '20px', textAlign: 'center' }}>
           <p>Don't have an account? <Link to="/register">Sign up</Link></p>
-          <p style={{ marginTop: '10px', fontSize: '14px', color: '#64748b' }}>
-            Demo: student@nu.edu.pk / 12345678
-          </p>
         </div>
       </div>
     </div>
