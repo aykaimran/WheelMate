@@ -1,19 +1,17 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// Generate JWT Token
+//Generating JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     });
 };
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
+//register a new user
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password, phone, bio } = req.body;
+        const { name, email, password } = req.body;
         
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -25,13 +23,7 @@ const registerUser = async (req, res) => {
         }
         
         // Create user
-        const user = await User.create({
-            name,
-            email,
-            password,
-            phone,
-            bio
-        });
+        const user = await User.create({ name, email, password });
         
         const token = generateToken(user._id);
         
@@ -41,10 +33,7 @@ const registerUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email,
-                role: user.role,
-                phone: user.phone,
-                bio: user.bio
+                email: user.email
             }
         });
     } catch (error) {
@@ -55,14 +44,11 @@ const registerUser = async (req, res) => {
     }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
+//login user
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         
-        // Check if user exists
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             return res.status(401).json({ 
@@ -71,7 +57,6 @@ const loginUser = async (req, res) => {
             });
         }
         
-        // Check password
         const isPasswordMatch = await user.comparePassword(password);
         if (!isPasswordMatch) {
             return res.status(401).json({ 
@@ -88,10 +73,7 @@ const loginUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email,
-                role: user.role,
-                phone: user.phone,
-                bio: user.bio
+                email: user.email
             }
         });
     } catch (error) {
@@ -102,9 +84,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-// @desc    Change password
-// @route   PUT /api/auth/changepassword
-// @access  Private
+//change password
 const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
@@ -117,22 +97,24 @@ const changePassword = async (req, res) => {
             });
         }
         
-        // Check current password
-        const isPasswordMatch = await user.comparePassword(currentPassword);
-        if (!isPasswordMatch) {
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
             return res.status(401).json({ 
                 success: false, 
                 message: 'Current password is incorrect' 
             });
         }
         
-        // Update password
         user.password = newPassword;
         await user.save();
         
+        //generate new token after password change
+        const token = generateToken(user._id);
+        
         res.json({
             success: true,
-            message: 'Password changed successfully'
+            message: 'Password changed successfully',
+            token
         });
     } catch (error) {
         res.status(500).json({ 
@@ -142,27 +124,16 @@ const changePassword = async (req, res) => {
     }
 };
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
+// Get current user details
 const getCurrentUser = async (req, res) => {
-    try {
-        res.json({
-            success: true,
-            user: req.user
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: error.message 
-        });
-    }
+    res.json({
+        success: true,
+        user: req.user
+    });
 };
 
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Private
-const logoutUser = async (req, res) => {
+// Logout user (for JWT, this is handled on the client side by deleting the token)
+const logoutUser = (req, res) => {
     res.json({
         success: true,
         message: 'Logged out successfully'

@@ -14,12 +14,13 @@ app.use(cors());
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/rides', require('./routes/rideRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ 
         success: false, 
-        message: 'Something went wrong!' 
+        message: 'Something went wrong on the server' 
     });
 });
 

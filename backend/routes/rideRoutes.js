@@ -5,22 +5,17 @@ const {
     getRideById,
     createRide,
     updateRide,
-    deleteRide,
-    bookSeat,
-    requestRide,
-    getMyBookings,
-    cancelBooking
+    deleteRide
 } = require('../controllers/rideController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.get('/', getRides);
-router.get('/mybookings', protect, getMyBookings);
-router.get('/:id', getRideById);
-router.post('/', protect, createRide);
-router.post('/request', protect, requestRide);
-router.post('/:id/book', protect, bookSeat);
-router.put('/:id', protect, updateRide);
-router.delete('/:id', protect, deleteRide);
-router.put('/:rideId/cancel/:bookingId', protect, cancelBooking);
+router.route('/')
+    .get(getRides)
+    .post(protect, createRide);
+
+router.route('/:id')
+    .get(getRideById)
+    .put(protect, updateRide)
+    .delete(protect, deleteRide);
 
 module.exports = router;
