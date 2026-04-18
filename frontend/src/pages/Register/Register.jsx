@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerUser, selectUserError, clearError } from '../Redux/userSlice'
+import { register, selectUserError, clearError } from '../Redux/userSlice'
 import './Register.css'
 import toast from 'react-hot-toast'
 
@@ -173,7 +173,7 @@ const Register = () => {
 
     setIsSubmitting(true)
     dispatch(clearError())
-    dispatch(registerUser({ 
+    dispatch(register({ 
       email: formData.email, 
       password: formData.password, 
       name: formData.name.trim() 

@@ -11,9 +11,18 @@ const generateToken = (id) => {
 //register a new user
 const registerUser = async (req, res) => {
     try {
+        console.log('Register request body:', req.body);  // Debug log
+
         const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please provide name, email and password' 
+            });
+        }
         
         // Check if user exists
+        
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ 
@@ -23,8 +32,9 @@ const registerUser = async (req, res) => {
         }
         
         // Create user
+        console.log('Creating user...');
         const user = await User.create({ name, email, password });
-        
+        console.log('User created:', user);
         const token = generateToken(user._id);
         
         res.status(201).json({
@@ -37,6 +47,7 @@ const registerUser = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('REGISTER ERROR:', error);
         res.status(500).json({ 
             success: false, 
             message: error.message 

@@ -1,14 +1,38 @@
 import React, { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom' 
 import { useDispatch, useSelector } from 'react-redux'
-import { selectRideById } from '../Redux/rideSlice' 
+import { selectRideById, fetchRideById } from '../Redux/rideSlice' 
 import './ViewDetails.css'
 
 const ViewDetails = () => {
   const { id } = useParams() 
   const dispatch = useDispatch()
-    const ride = useSelector(selectRideById(id))
-  
+  const ride = useSelector(selectRideById(id))
+  const [loading, setLoading] = React.useState(true)
+
+  useEffect(() => {
+    // If ride is not in Redux store, fetch it from backend
+    if (!ride) {
+      dispatch(fetchRideById(id))
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false))
+    } else {
+      setLoading(false)
+    }
+  }, [dispatch, id, ride])
+
+  if (loading) {
+    return (
+      <div className="details-container">
+        <div className="details-card">
+          <h2>Loading...</h2>
+          <p>Please wait while we fetch ride details.</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!ride) {
     return (
       <div className="details-container">
@@ -43,13 +67,13 @@ const ViewDetails = () => {
           )}
 
           <div className="driver-bio">
-            <p><strong>About Driver:</strong>{ride.driverBio || "No bio available"}</p>
+            <p><strong>About Driver:</strong> {ride.driverBio || "No bio available"}</p>
           </div>
         </div>
 
         <div className="actions" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
           <Link to="/availablerides" className="secondary-btn">← Back to Rides</Link>
-          <Link to={`/bookseat/${ride.id}`} className="primary-btn">Book This Ride</Link>
+          <Link to={`/bookseat/${ride._id || ride.id}`} className="primary-btn">Book This Ride</Link>
         </div>
       </div>
     </div>

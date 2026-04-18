@@ -1,109 +1,159 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { 
+    registerUserAPI, 
+    loginUserAPI, 
+    logoutUserAPI, 
+    changePasswordAPI, 
+    getCurrentUserAPI 
+} from '../../services/api';
+
+//async thunks using fetch
+export const register = createAsyncThunk(
+    'user/register',
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await registerUserAPI(userData);
+            localStorage.setItem('token', response.token);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const login = createAsyncThunk(
+    'user/login',
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await loginUserAPI(credentials);
+            localStorage.setItem('token', response.token);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const logout = createAsyncThunk(
+    'user/logout',
+    async (_, { rejectWithValue }) => {
+        try {
+            await logoutUserAPI();
+            localStorage.removeItem('token');
+            return {};
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+export const changePassword = createAsyncThunk(
+    'user/changePassword',
+    async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+        try {
+            const response = await changePasswordAPI({ currentPassword, newPassword });
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+export const fetchCurrentUser = createAsyncThunk(
+    'user/fetchCurrentUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getCurrentUserAPI();
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const userSlice = createSlice({
     name: 'user',
     initialState: {
         currentUser: null,
-        isLoggedIn: false,
-        userProfiles: {},
+        isLoggedIn: !!localStorage.getItem('token'),
+        loading: false,
         error: null,
         passwordChangeSuccess: false
     },
-
     reducers: {
-        registerUser: (state, action) => {
-            const newUser = {
-                email: action.payload.email,
-                password: action.payload.password,
-                name: action.payload.name || ''
-            }
-
-            if (state.userProfiles[newUser.email]) {
-                state.error = 'User already exists'
-            } else {
-                state.userProfiles[newUser.email] = newUser
-                state.error = null
-            }
-        },
-
-        login: (state, action) => {
-            const { email, password } = action.payload
-            const user = Object.values(state.userProfiles).find(
-                u => u.email === email && u.password === password
-            )
-            if (user) {
-                state.currentUser = user
-                state.isLoggedIn = true
-                state.error = null
-            } else {
-                state.isLoggedIn = false
-                state.currentUser = null
-                state.error = 'Invalid email or password'
-            }
-        },
-
-        logout: (state) => {
-            state.currentUser = null
-            state.isLoggedIn = false
-            state.error = null
-        },
-
-        changepassword: (state, action) => {
-    const { email, oldPassword, newPassword } = action.payload
-
-    const user = state.userProfiles[email]
-    if (user) {
-        if (user.password === oldPassword) {
-            user.password = newPassword
-            if (state.currentUser?.email === email) {
-                state.currentUser.password = newPassword
-            }
-            state.error = null
-            state.passwordChangeSuccess = true  
-        } else {
-            state.error = 'Old password is incorrect'
-            state.passwordChangeSuccess = false
-        }
-    } else {
-        state.error = 'User not found'
-        state.passwordChangeSuccess = false
-    }
-  },
-
-        storeUserProfile: (state, action) => {
-            const { email, profileData } = action.payload
-            if (!state.userProfiles[email]) {
-                state.userProfiles[email] = {}
-            }
-            state.userProfiles[email] = {
-                ...state.userProfiles[email],
-                ...profileData
-            }
-        },
-        setError: (state, action) => {
-            state.error = action.payload
-        },
         clearError: (state) => {
-            state.error = null
+            state.error = null;
+        },
+        clearPasswordChangeSuccess: (state) => {
+            state.passwordChangeSuccess = false;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            //register here
+            .addCase(register.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(register.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentUser = action.payload.user;
+                state.isLoggedIn = true;
+            })
+            .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.isLoggedIn = false;
+            })
+
+            //login here
+            .addCase(login.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentUser = action.payload.user;
+                state.isLoggedIn = true;
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.isLoggedIn = false;
+            })
+            //logout
+            .addCase(logout.fulfilled, (state) => {
+                state.currentUser = null;
+                state.isLoggedIn = false;
+            })
+            //change password
+            .addCase(changePassword.pending, (state) => {
+                state.loading = true;
+                state.passwordChangeSuccess = false;
+            })
+            .addCase(changePassword.fulfilled, (state) => {
+                state.loading = false;
+                state.passwordChangeSuccess = true;
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.passwordChangeSuccess = false;
+            })
+            // fetch current user
+            .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+                state.currentUser = action.payload.user;
+                state.isLoggedIn = true;
+            });
     }
-})
+});
 
-export const {
-    registerUser,
-    login,
-    logout,
-    changepassword,
-    storeUserProfile,
-    setError,
-    clearError
-} = userSlice.actions
+export const { clearError, clearPasswordChangeSuccess } = userSlice.actions;
+export const selectCurrentUser = (state) => state.user.currentUser;
+export const selectIsLoggedIn = (state) => state.user.isLoggedIn;
+export const selectUserLoading = (state) => state.user.loading;
+export const selectUserError = (state) => state.user.error;
+export const selectPasswordChangeSuccess = (state) => state.user.passwordChangeSuccess;
 
-//selectors
-export const selectCurrentUser = (state) => state.user.currentUser
-export const selectIsLoggedIn = (state) => state.user.isLoggedIn
-export const selectUserProfile = (useremail) => (state) => state.user.userProfiles[useremail]
-export const selectUserError = (state) => state.user.error
-export const selectPasswordChangeSuccess = (state) => state.user.passwordChangeSuccess
-
-export default userSlice.reducer
+export default userSlice.reducer;

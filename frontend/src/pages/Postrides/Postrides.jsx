@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './PostRides.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { addnewride } from '../Redux/rideSlice'
+import { createRide  } from '../Redux/rideSlice'
 import { selectCurrentUser } from '../Redux/userSlice'
 import toast from 'react-hot-toast'
 
@@ -225,7 +225,7 @@ const PostRides = () => {
     }
 
     try {
-      dispatch(addnewride(newRide))
+      dispatch(createRide(newRide))
       toast.success('Ride posted successfully!')
       setTimeout(() => {
         navigate('/availablerides')

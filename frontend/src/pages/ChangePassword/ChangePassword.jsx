@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  changepassword,
+  changePassword,
   selectCurrentUser,
   selectUserError,
   selectPasswordChangeSuccess,
@@ -96,10 +96,9 @@ const ChangePassword = () => {
 
     setIsSubmitting(true)
 
-    dispatch(changepassword({
-      email: currentUser.email,
-      oldPassword: formData.currentPassword,
-      newPassword: formData.newPassword
+    dispatch(changePassword({
+        currentPassword: formData.currentPassword, 
+        newPassword: formData.newPassword
     }))
   }
 

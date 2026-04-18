@@ -157,21 +157,13 @@ const RequestRide = () => {
 
     try {
       dispatch(requestRide({
-        rideId: 'request-' + Date.now(),
-        useremail: currentUser.email,
-        seatsRequested: parseInt(formData.seats),
-        passengerInfo: {
-          name: currentUser.name,
-          email: currentUser.email,
-          notes: formData.notes.trim() || 'No special requirements'
-        },
-        requestDetails: {
-          pickup: formData.pickup.trim(),
-          destination: formData.destination.trim(),
-          date: formData.date,
-          time: formData.time
-        }
-      }))
+        pickup: formData.pickup,
+        destination: formData.destination,
+        date: formData.date,
+        time: formData.time,
+        seats: parseInt(formData.seats),
+        notes: formData.notes
+    }));
 
       toast.success('Ride request sent to all drivers!')
       setTimeout(() => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectRideById, bookARide } from '../Redux/rideSlice'
+import { selectRideById, bookSeat  } from '../Redux/rideSlice'
 import { selectCurrentUser } from '../Redux/userSlice'
 import './BookSeat.css'
 import toast from 'react-hot-toast'
@@ -98,15 +98,10 @@ const BookSeat = () => {
     setIsBooking(true)
 
     try {
-      dispatch(bookARide({
+      dispatch(bookSeat({
         rideId: id,
-        useremail: currentUser.email,
-        seatsRequested: seatsToBook,
-        passengerInfo: {
-          name: currentUser.name,
-          email: currentUser.email
-        }
-      }))
+        seats: seatsToBook
+    }));
       
       setShowMessage(true)
       toast.success(`${seatsToBook} seat(s) booked successfully!`)

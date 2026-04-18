@@ -1,334 +1,307 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+    getRidesAPI,
+    getRideByIdAPI,
+    createRideAPI,
+    updateRideAPI,
+    deleteRideAPI,
+    bookSeatAPI,
+    getMyBookingsAPI,
+    cancelBookingAPI,
+    requestRideAPI,
+    getPendingRequestsAPI,
+    getMyRideRequestsAPI,
+    acceptRideRequestAPI,
+    cancelRideRequestAPI
+} from '../../services/api';
 
-const initialRides = [
-    {
-        id: "1",
-        driver: "Ali Raza",
-        pickup: "Gulshan Campus",
-        destination: "DHA Phase 6",
-        time: "8:30 AM",
-        date: "2024-03-15",
-        availableSeats: 3,
-        bookedSeats: 0,
-        vehicle: "Toyota Corolla",
-        price: "Rs. 150",
-        driverEmail: "ali@example.com",
-        status: 'active',
-        contact: "03001234567",
-        driverBio: "Ali is a friendly driver with 5 years of experience. He loves meeting new people and sharing stories during rides.",
-        createdAt: "2024-03-10T10:00:00.000Z",
-        requests: []
-    },
-    {
-        id: "2",
-        driver: "Sara Khan",
-        pickup: "Main Campus",
-        destination: "North Nazimabad",
-        time: "9:15 AM",
-        date: "2024-03-15",
-        availableSeats: 2,
-        bookedSeats: 0,
-        vehicle: "Honda Civic",
-        price: "Rs. 200",
-        driverEmail: "sara@example.com",
-        status: 'active',
-        contact: "03007654321",
-        driverBio: "Sara is a punctual and reliable driver. She enjoys driving and always ensures her passengers have a comfortable ride.",
-        createdAt: "2024-03-10T11:00:00.000Z",
-        requests: []
-    },
-    {
-        id: "3",
-        driver: "Ahmed Malik",
-        pickup: "Gulshan Campus",
-        destination: "Clifton",
-        time: "10:00 AM",
-        date: "2024-03-16",
-        availableSeats: 4,
-        bookedSeats: 0,
-        vehicle: "Suzuki Swift",
-        price: "Rs. 180",
-        driverEmail: "ahmed@example.com",
-        status: 'active',
-        contact: "03009876543",
-        driverBio: "Ahmed is a student driver who loves driving around the city. He is friendly and always up for a chat during the ride.",
-        createdAt: "2024-03-11T09:00:00.000Z",
-        requests: []
-    },
-    {
-        id: "4",
-        driver: "Fatima Khan",
-        pickup: "Main Campus",
-        destination: "Gulistan-e-Johar",
-        time: "11:30 AM",
-        date: "2024-03-16",
-        availableSeats: 1,
-        bookedSeats: 0,
-        vehicle: "Cultus",
-        price: "Rs. 120",
-        driverEmail: "fatima@example.com",
-        status: 'active',
-        createdAt: "2024-03-11T14:00:00.000Z",
-        requests: []
+
+export const fetchRides = createAsyncThunk(
+    'rides/fetchRides',
+    async (filters = {}, { rejectWithValue }) => {
+        try {
+            const response = await getRidesAPI(filters);
+            return response.rides;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
     }
-]
+);
+export const fetchRideById = createAsyncThunk(
+    'rides/fetchRideById',
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await getRideByIdAPI(id);
+            return response.ride;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const createRide = createAsyncThunk(
+    'rides/createRide',
+    async (rideData, { rejectWithValue }) => {
+        try {
+            const response = await createRideAPI(rideData);
+            return response.ride;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const updateRide = createAsyncThunk(
+    'rides/updateRide',
+    async ({ id, rideData }, { rejectWithValue }) => {
+        try {
+            const response = await updateRideAPI(id, rideData);
+            return response.ride;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const deleteRide = createAsyncThunk(
+    'rides/deleteRide',
+    async (id, { rejectWithValue }) => {
+        try {
+            await deleteRideAPI(id);
+            return id;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const bookSeat = createAsyncThunk(
+    'rides/bookSeat',
+    async ({ rideId, seats }, { rejectWithValue }) => {
+        try {
+            const response = await bookSeatAPI(rideId, seats);
+            return { rideId, booking: response.booking };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const fetchMyBookings = createAsyncThunk(
+    'rides/fetchMyBookings',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getMyBookingsAPI();
+            return response.bookings;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const cancelBooking = createAsyncThunk(
+    'rides/cancelBooking',
+    async ({ rideId, bookingId }, { rejectWithValue }) => {
+        try {
+            await cancelBookingAPI(rideId, bookingId);
+            return { rideId, bookingId };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+export const requestRide = createAsyncThunk(
+    'rides/requestRide',
+    async (requestData, { rejectWithValue }) => {
+        try {
+            const response = await requestRideAPI(requestData);
+            return response.request;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const fetchPendingRequests = createAsyncThunk(
+    'rides/fetchPendingRequests',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getPendingRequestsAPI();
+            return response.requests;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const fetchMyRideRequests = createAsyncThunk(
+    'rides/fetchMyRideRequests',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await getMyRideRequestsAPI();
+            return response.requests;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const acceptRideRequest = createAsyncThunk(
+    'rides/acceptRideRequest',
+    async ({ requestId, rideId }, { rejectWithValue }) => {
+        try {
+            const response = await acceptRideRequestAPI(requestId, rideId);
+            return { requestId, booking: response.booking };
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const cancelRideRequest = createAsyncThunk(
+    'rides/cancelRideRequest',
+    async (requestId, { rejectWithValue }) => {
+        try {
+            await cancelRideRequestAPI(requestId);
+            return requestId;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const rideSlice = createSlice({
     name: 'rides',
     initialState: {
-        rides: initialRides,
-        riderequests: [],
-        userbookings: [],
+        rides: [],
+        selectedRide: null,
+        userBookings: [],
+        rideRequests: [],
+        pendingRequests: [],
+        loading: false,
         error: null,
-        properties: {
+        filters: {
             pickup: '',
             destination: '',
             date: '',
-            seats: 1
+            seats: ''
         }
     },
-
     reducers: {
-        storerides: (state, action) => {
-            state.rides = action.payload
+        setFilters: (state, action) => {
+            state.filters = { ...state.filters, ...action.payload };
         },
-
-        addnewride: (state, action) => {
-            const newRide = {
-                id: Date.now().toString(),
-                ...action.payload,
-                createdAt: new Date().toISOString(),
-                bookedSeats: 0,
-                status: 'active',
-                requests: [],
-                driverBio: action.payload.driverBio || `${action.payload.driver} is a friendly driver.` // Default bio
-            }
-            state.rides.unshift(newRide)
+        clearFilters: (state) => {
+            state.filters = { pickup: '', destination: '', date: '', seats: '' };
         },
-
-        bookARide: (state, action) => {
-            const { rideId, useremail, seatsRequested, passengerInfo } = action.payload
-            const ride = state.rides.find(r => r.id === rideId)
-
-            if (ride && ride.availableSeats >= seatsRequested) {
-                const booking = {
-                    id: Date.now().toString(),
-                    rideId,
-                    useremail,
-                    seats: seatsRequested,
-                    passengerInfo,
-                    status: 'booked',
-                    bookedAt: new Date().toISOString(),
-                    rideDetails: {
-                        driver: ride.driver,
-                        pickup: ride.pickup,
-                        destination: ride.destination,
-                        time: ride.time,
-                        date: ride.date,
-                        price: ride.price,
-                        contact: ride.contact,
-                        vehicle: ride.vehicle
-                    }
-                }
-
-                state.riderequests.push(booking)
-                state.userbookings.push(booking)
-
-                ride.availableSeats -= seatsRequested
-                ride.bookedSeats += seatsRequested
-                state.error = null
-            } else {
-                state.error = 'Not enough seats available'
-            }
-        },
-
-        requestRide: (state, action) => {
-            const { rideId, useremail, seatsRequested, passengerInfo, requestDetails } = action.payload
-
-            const request = {
-                id: Date.now().toString(),
-                rideId,
-                useremail,
-                seats: seatsRequested,
-                passengerInfo,
-                status: 'requested',
-                type: 'ride-request',
-                requestedAt: new Date().toISOString(),
-                pickup: requestDetails.pickup,
-                destination: requestDetails.destination,
-                date: requestDetails.date,
-                time: requestDetails.time,
-                notes: passengerInfo.notes || ''
-            }
-
-            state.riderequests.push(request)
-            state.userbookings.push(request)
-            state.rides.unshift({
-                id: rideId,
-                driver: "Request by " + passengerInfo.name,
-                pickup: requestDetails.pickup,
-                destination: requestDetails.destination,
-                time: requestDetails.time,
-                date: requestDetails.date,
-                availableSeats: seatsRequested,
-                bookedSeats: 0,
-                vehicle: "N/A",
-                price: "Negotiable",
-                driverEmail: useremail,
-                status: 'requested',
-                isRequest: true,
-                requests: []
-            })
-        },
-        acceptRequest: (state, action) => {
-    const rideId = action.payload
-
-    const ride = state.rides.find(r => r.id === rideId)
-
-    if (ride && ride.isRequest) {
-        ride.status = 'active'
-        ride.isRequest = false
-        ride.driver = "Driver Accepted"
-        
-        //removes the ride request from the rides array
-        state.rides = state.rides.filter(r => r.id !== rideId)
-
-        state.userbookings = state.userbookings.map(b => {
-            if (b.rideId === rideId) {
-                return { ...b, status: 'accepted' }
-            }
-            return b
-        })
-
-        state.riderequests = state.riderequests.map(b => {
-            if (b.rideId === rideId) {
-                return { ...b, status: 'accepted' }
-            }
-            return b
-        })
-    }
-},
-
-        getuserbookings: (state, action) => {
-            const useremail = action.payload
-            const bookings = state.riderequests.filter(
-                booking => booking.useremail === useremail
-            )
-
-            state.userbookings = bookings.map(booking => {
-                if (booking.rideId && !booking.rideId.startsWith('request-')) {
-                    const ride = state.rides.find(r => r.id === booking.rideId)
-                    if (ride) {
-                        return {
-                            ...booking,
-                            rideDetails: {
-                                driver: ride.driver,
-                                pickup: ride.pickup,
-                                destination: ride.destination,
-                                time: ride.time,
-                                date: ride.date,
-                                contact: ride.contact,
-                                vehicle: ride.vehicle,
-                                price: ride.price,
-                                driverBio: ride.driverBio
-                            }
-                        }
-                    }
-                }
-                return booking
-            })
-        },
-
-        updateSeatAvailability: (state, action) => {
-            const { rideId, seats } = action.payload
-            const ride = state.rides.find(r => r.id === rideId)
-
-            if (ride) {
-                ride.availableSeats = seats
-            }
-        },
-
-        storeriderequests: (state, action) => {
-            state.riderequests = action.payload
-        },
-
-
-        cancelBooking: (state, action) => {
-            const { bookingId, rideId } = action.payload
-            const booking = state.riderequests.find(b => b.id === bookingId)
-            state.riderequests = state.riderequests.filter(b => b.id !== bookingId)
-            state.userbookings = state.userbookings.filter(b => b.id !== bookingId)
-            if (booking) {
-                const ride = state.rides.find(r => r.id === rideId)
-                if (ride) {
-                    ride.availableSeats += booking.seats
-                    ride.bookedSeats -= booking.seats
-                }
-            }
-        },
-
-        searchRides: (state, action) => {
-            const searchParams = action.payload
-            state.properties = {
-                ...state.properties,
-                ...searchParams
-            }
-        },
-        selectRide: (state, action) => {
-            const rideId = action.payload
-            state.selectedRide = state.rides.find(r => r.id === rideId) || null
-        },
-
-        setRidesError: (state, action) => {
-            state.error = action.payload
-        },
-
         clearRidesError: (state) => {
-            state.error = null
+            state.error = null;
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            //fetch rides
+            .addCase(fetchRides.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRides.fulfilled, (state, action) => {
+                state.loading = false;
+                state.rides = action.payload;
+            })
+            .addCase(fetchRides.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            //fetch ride by id
+            .addCase(fetchRideById.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchRideById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedRide = action.payload;
+            })
+            .addCase(fetchRideById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            //create ride
+            .addCase(createRide.fulfilled, (state, action) => {
+                state.rides.unshift(action.payload);
+            })
+            //update ride
+            .addCase(updateRide.fulfilled, (state, action) => {
+                const index = state.rides.findIndex(r => r._id === action.payload._id);
+                if (index !== -1) state.rides[index] = action.payload;
+                if (state.selectedRide?._id === action.payload._id) state.selectedRide = action.payload;
+            })
+            //delete ride
+            .addCase(deleteRide.fulfilled, (state, action) => {
+                state.rides = state.rides.filter(r => r._id !== action.payload);
+                if (state.selectedRide?._id === action.payload) state.selectedRide = null;
+            })
+            //book seat
+            .addCase(bookSeat.fulfilled, (state, action) => {
+                const ride = state.rides.find(r => r._id === action.payload.rideId);
+                if (ride) ride.availableSeats -= 1;
+            })
+            //fetch my bookings
+            .addCase(fetchMyBookings.fulfilled, (state, action) => {
+                state.userBookings = action.payload;
+            })
+            //cancel booking
+            .addCase(cancelBooking.fulfilled, (state, action) => {
+                state.userBookings = state.userBookings.filter(
+                    b => !(b.rideId === action.payload.rideId && b.id === action.payload.bookingId)
+                );
+                const ride = state.rides.find(r => r._id === action.payload.rideId);
+                if (ride) ride.availableSeats += 1;
+            })
+            .addCase(requestRide.fulfilled, (state, action) => {
+                state.rideRequests.unshift(action.payload);
+            })
+            // Fetch pending requests
+            .addCase(fetchPendingRequests.fulfilled, (state, action) => {
+                state.pendingRequests = action.payload;
+            })
+            // Fetch my requests
+            .addCase(fetchMyRideRequests.fulfilled, (state, action) => {
+                state.rideRequests = action.payload;
+            })
+            // Accept request
+            .addCase(acceptRideRequest.fulfilled, (state, action) => {
+                state.pendingRequests = state.pendingRequests.filter(r => r.id !== action.payload.requestId);
+                // Also update booking in userBookings
+            })
+            // Cancel request
+            .addCase(cancelRideRequest.fulfilled, (state, action) => {
+                state.rideRequests = state.rideRequests.filter(r => r.id !== action.payload);
+                state.pendingRequests = state.pendingRequests.filter(r => r.id !== action.payload);
+            });
+
+
     }
-})
+});
 
-export const {
-    storerides,
-    addnewride,
-    bookARide,
-    updateSeatAvailability,
-    storeriderequests,
-    getuserbookings,
-    cancelBooking,
-    searchRides,
-    selectRide,
-    setRidesError,
-    requestRide,
-    clearRidesError,
-    acceptRequest
-} = rideSlice.actions
-
-export const selectAllRides = (state) => state.rides.rides
+export const { setFilters, clearFilters, clearRidesError } = rideSlice.actions;
+export const selectAllRides = (state) => state.rides.rides;
+export const selectSelectedRide = (state) => state.rides.selectedRide;
+export const selectUserBookings = (state) => state.rides.userBookings;
+export const selectRidesLoading = (state) => state.rides.loading;
+export const selectRidesError = (state) => state.rides.error;
+export const selectRideFilters = (state) => state.rides.filters;
+export const selectPendingRequests = (state) => state.rides.pendingRequests;
+export const selectMyRideRequests = (state) => state.rides.rideRequests;
 export const selectFilteredRides = (state) => {
-    const { rides, properties } = state.rides
+    const { rides, filters } = state.rides;
     return rides.filter(ride => {
-        if (properties.pickup && !ride.pickup.toLowerCase().includes(properties.pickup.toLowerCase())) {
-            return false
-        }
-        if (properties.destination && !ride.destination.toLowerCase().includes(properties.destination.toLowerCase())) {
-            return false
-        }
-        if (properties.date && ride.date !== properties.date) {
-            return false
-        }
-        if (ride.availableSeats < properties.seats) {
-            return false
-        }
-        return true
-    })
-}
-export const selectuserbookings = (state) => state.rides.userbookings
-export const selectSelectedRide = (state) => state.rides.selectedRide
-export const selectRideById = (rideId) => (state) => state.rides.rides.find(r => r.id === rideId)
-export const selectRidesLoading = (state) => state.rides.loading
-export const selectRidesError = (state) => state.rides.error
-export const selectRideproperties = (state) => state.rides.properties
-
-export default rideSlice.reducer
+        if (filters.pickup && !ride.pickup.toLowerCase().includes(filters.pickup.toLowerCase())) return false;
+        if (filters.destination && !ride.destination.toLowerCase().includes(filters.destination.toLowerCase())) return false;
+        if (filters.date && ride.date !== filters.date) return false;
+        if (filters.seats && ride.availableSeats < parseInt(filters.seats)) return false;
+        return true;
+    });
+};
+export const selectRideById = (rideId) => (state) => 
+    state.rides.rides.find(ride => ride._id === rideId || ride.id === rideId);
+export default rideSlice.reducer;

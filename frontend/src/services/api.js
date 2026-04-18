@@ -109,3 +109,24 @@ export const getMyBookingsAPI = async () => {
 export const cancelBookingAPI = async (rideId, bookingId) => {
     return await apiRequest(`/bookings/${rideId}/${bookingId}`, 'DELETE', null, true);
 };
+
+
+export const requestRideAPI = async (requestData) => {
+    return await apiRequest('/rides/request', 'POST', requestData, true);
+};
+
+export const getPendingRequestsAPI = async () => {
+    return await apiRequest('/rides/requests/pending', 'GET', null, true);
+};
+
+export const getMyRideRequestsAPI = async () => {
+    return await apiRequest('/rides/myrequests', 'GET', null, true);
+};
+
+export const acceptRideRequestAPI = async (requestId, rideId) => {
+    return await apiRequest(`/rides/requests/${requestId}/accept`, 'PUT', { rideId }, true);
+};
+
+export const cancelRideRequestAPI = async (requestId) => {
+    return await apiRequest(`/rides/requests/${requestId}`, 'DELETE', null, true);
+};

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectuserbookings, getuserbookings, cancelBooking } from '../Redux/rideSlice'
+// import { selectuserbookings, getuserbookings, cancelBooking } from '../Redux/rideSlice'
+import { fetchMyBookings, cancelBooking, selectUserBookings } from '../Redux/rideSlice'
+
 import { selectCurrentUser } from '../Redux/userSlice'
 import toast from 'react-hot-toast'
 import './MyBookings.css'
@@ -10,7 +12,7 @@ const MyBookings = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
-  const bookings = useSelector(selectuserbookings)
+  const bookings = useSelector(selectUserBookings)
   const [showContact, setShowContact] = useState(null)
 
   useEffect(() => {
@@ -20,14 +22,16 @@ const MyBookings = () => {
       return
     }
 
-    dispatch(getuserbookings(currentUser.email))
+    // dispatch(getuserbookings(currentUser.email))
+      dispatch(fetchMyBookings())
+
   }, [currentUser, dispatch, navigate])
 
   const handleCancelBooking = (bookingId, rideId) => {
     if (window.confirm('Are you sure you want to cancel this request?')) {
-      dispatch(cancelBooking({ bookingId, rideId }))
+      dispatch(cancelBooking({ rideId, bookingId }))
       toast.success('Booking cancelled successfully')
-      dispatch(getuserbookings(currentUser.email))
+      dispatch(fetchMyBookings())
     }
   }
 
@@ -38,25 +42,26 @@ const MyBookings = () => {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'requested': return 'status-pending'
-      case 'accepted': return 'status-confirmed'
-      case 'booked': return 'status-confirmed'
-      case 'completed': return 'status-completed'
-      case 'cancelled': return 'status-cancelled'
-      default: return ''
+        case 'pending': return 'status-pending'
+        case 'accepted': return 'status-accepted'
+        case 'confirmed': return 'status-confirmed'
+        case 'completed': return 'status-completed'
+        case 'cancelled': return 'status-cancelled'
+        case 'rejected': return 'status-cancelled'
+        default: return ''
     }
-  }
-
-  const getStatusText = (status) => {
+}
+const getStatusText = (status) => {
     switch (status) {
-      case 'requested': return 'Requested'
-      case 'accepted': return 'Accepted by Driver'
-      case 'booked': return 'Booked'
-      case 'completed': return ' Completed'
-      case 'cancelled': return ' Cancelled'
-      default: return status
+        case 'pending': return ' Requested'
+        case 'accepted': return ' Accepted by Driver'
+        case 'confirmed': return ' Confirmed'
+        case 'completed': return ' Completed'
+        case 'cancelled': return ' Cancelled'
+        case 'rejected': return ' Cancelled'
+        default: return status
     }
-  }
+}
 
   if (!currentUser) {
     return (
@@ -124,7 +129,7 @@ const MyBookings = () => {
 
                   {booking.status === 'pending' && (
                     <button
-                      onClick={() => handleCancelBooking(booking.id, booking.rideId)}
+                      onClick={() => handleCancelBooking(booking.rideId, booking.id)}
                       className="cancel-btn"
                     >
                       Cancel Request
