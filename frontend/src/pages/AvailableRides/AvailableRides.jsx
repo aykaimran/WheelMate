@@ -29,7 +29,6 @@ const AvailableRides = () => {
   const pendingRequests = useSelector(selectPendingRequests)
 
   const [showRequests, setShowRequests] = useState(false)
-  const [selectedRideId, setSelectedRideId] = useState('')
 
   const pickupParam = searchParams.get('pickup') || ''
   const destinationParam = searchParams.get('destination') || ''
@@ -92,16 +91,27 @@ const AvailableRides = () => {
 
   const ridesToShow = filteredRides
 
-  const handleAcceptRequest = (requestId) => {
-    if (!selectedRideId) {
-      toast.error('Please select a ride to assign this request to')
+  // Simplified accept request - automatically uses the driver's first available ride
+  const handleAcceptRequest = (request) => {
+    // Find driver's own rides that have enough seats
+    const driverRides = allRides.filter(ride => 
+      ride.driverId === currentUser?.id && 
+      ride.availableSeats >= request.seats &&
+      ride.status === 'active'
+    )
+    
+    if (driverRides.length === 0) {
+      toast.error('You need to post a ride first before accepting requests')
       return
     }
-    dispatch(acceptRideRequest({ requestId, rideId: selectedRideId }))
+    
+    // Use the first available ride (or you can show a modal to choose)
+    const selectedRide = driverRides[0]
+    
+    dispatch(acceptRideRequest({ requestId: request.id, rideId: selectedRide._id || selectedRide.id }))
       .unwrap()
       .then(() => {
-        toast.success('Ride request accepted!')
-        setSelectedRideId('')
+        toast.success(`Request accepted! Passenger added to ${selectedRide.pickup} → ${selectedRide.destination}`)
         dispatch(fetchPendingRequests())
         dispatch(fetchRides())
       })
@@ -138,47 +148,46 @@ const AvailableRides = () => {
             <p className="no-requests">No pending ride requests</p>
           ) : (
             <div className="requests-grid">
-              {pendingRequests.map((request) => (
-                <div key={request.id} className="request-card">
-                  <div className="request-header">
-                    <h4>{request.passengerName}</h4>
-                    <span className="request-badge">Pending</span>
+              {pendingRequests.map((request) => {
+                // Check if driver has any ride that can accept this request
+                const hasAvailableRide = allRides.some(ride => 
+                  ride.driverId === currentUser?.id && 
+                  ride.availableSeats >= request.seats &&
+                  ride.status === 'active'
+                )
+                
+                return (
+                  <div key={request.id} className="request-card">
+                    <div className="request-header">
+                      <h4>{request.passengerName}</h4>
+                      <span className="request-badge">Pending</span>
+                    </div>
+                    <div className="request-details">
+                      <p><strong>From:</strong> {request.pickup}</p>
+                      <p><strong>To:</strong> {request.destination}</p>
+                      <p><strong>Date:</strong> {request.date}</p>
+                      <p><strong>Time:</strong> {request.time}</p>
+                      <p><strong>Seats:</strong> {request.seats}</p>
+                      {request.notes && <p><strong>Notes:</strong> {request.notes}</p>}
+                    </div>
+                    <div className="request-actions">
+                      <button 
+                        className="accept-request-btn"
+                        onClick={() => handleAcceptRequest(request)}
+                        disabled={!hasAvailableRide}
+                      >
+                        {hasAvailableRide ? 'Accept Request' : 'No Available Ride'}
+                      </button>
+                    </div>
                   </div>
-                  <div className="request-details">
-                    <p><strong>From:</strong> {request.pickup}</p>
-                    <p><strong>To:</strong> {request.destination}</p>
-                    <p><strong>Date:</strong> {request.date}</p>
-                    <p><strong>Time:</strong> {request.time}</p>
-                    <p><strong>Seats:</strong> {request.seats}</p>
-                    {request.notes && <p><strong>Notes:</strong> {request.notes}</p>}
-                  </div>
-                  <div className="request-actions">
-                    <select 
-                      className="ride-select"
-                      value={selectedRideId}
-                      onChange={(e) => setSelectedRideId(e.target.value)}
-                    >
-                      <option value="">Select your ride</option>
-                      {allRides.filter(ride => ride.availableSeats >= request.seats).map(ride => (
-                        <option key={ride._id || ride.id} value={ride._id || ride.id}>
-                          {ride.pickup} → {ride.destination} ({ride.availableSeats} seats available)
-                        </option>
-                      ))}
-                    </select>
-                    <button 
-                      className="accept-request-btn"
-                      onClick={() => handleAcceptRequest(request.id)}
-                    >
-                      Accept Request
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
       )}
 
+      {/* Rest of the component remains the same */}
       <form className="search-form" onSubmit={handleSearch}>
         <div className="search-grid">
           <input 
