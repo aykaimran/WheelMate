@@ -78,7 +78,7 @@ const createRide = async (req, res) => {
             ...req.body,
             driverId: req.user.id,
             driver: req.user.name,
-            date: new Date(req.body.date) // convert to Date object
+            date: new Date(req.body.date)
         };
         
         const ride = await Ride.create(rideData);
@@ -127,7 +127,6 @@ const updateRide = async (req, res) => {
             ...ride._doc,
             date: ride.date.toISOString().split('T')[0]
         };
-        
         res.json({
             success: true,
             ride: formattedRide
@@ -167,19 +166,14 @@ const deleteRide = async (req, res) => {
 };
 
 const RideRequest = require('../models/RideRequest');
-
-//request a ride (passenger posts a ride request)
 //request a ride (passenger posts a ride request)
 const requestRide = async (req, res) => {
     try {
-        console.log('=== REQUEST RIDE START ===');
         console.log('User ID:', req.user?.id);
         console.log('User Name:', req.user?.name);
         console.log('Request body:', req.body);
         
-        const { pickup, destination, date, time, seats, notes } = req.body;
-        
-        // Validate required fields
+        const { pickup, destination, date, time, seats, notes } = req.body;   
         if (!pickup || !destination || !date || !time || !seats) {
             console.log('Missing required fields');
             return res.status(400).json({ 
@@ -204,8 +198,7 @@ const requestRide = async (req, res) => {
             status: 'pending'
         });
         
-        console.log('Ride request created:', rideRequest._id);
-        
+        console.log('Ride request created:', rideRequest._id);    
         res.status(201).json({
             success: true,
             message: 'Ride request posted successfully',
@@ -265,10 +258,10 @@ const getPendingRequests = async (req, res) => {
     }
 };
 
-//accept a ride request (driver accepts a passenger's request and adds them to their ride)
+//accept a ride request (driver accepts a passengers request and adds them to their ride)
 const acceptRideRequest = async (req, res) => {
     try {
-        const { rideId } = req.body; // The driver's existing ride ID
+        const { rideId } = req.body; //thhe driver's existing ride ID here
         const requestId = req.params.requestId;
         
         const rideRequest = await RideRequest.findById(requestId);
@@ -284,8 +277,7 @@ const acceptRideRequest = async (req, res) => {
                 success: false, 
                 message: 'This request has already been processed' 
             });
-        }
-        
+        }      
         const ride = await Ride.findById(rideId);
         if (!ride) {
             return res.status(404).json({ 
@@ -346,7 +338,7 @@ const acceptRideRequest = async (req, res) => {
     }
 };
 
-//get my ride requests (for passengers to view their own requests)
+//get my ride requests 
 const getMyRideRequests = async (req, res) => {
     try {
         const requests = await RideRequest.find({ passengerId: req.user.id })
@@ -378,7 +370,7 @@ const getMyRideRequests = async (req, res) => {
     }
 };
 
-//cancel a ride request (passenger cancels their pending request)
+//cancel a ride request
 const cancelRideRequest = async (req, res) => {
     try {
         const rideRequest = await RideRequest.findById(req.params.requestId);
@@ -395,15 +387,13 @@ const cancelRideRequest = async (req, res) => {
                 success: false, 
                 message: 'Not authorized to cancel this request' 
             });
-        }
-        
+        }        
         if (rideRequest.status !== 'pending') {
             return res.status(400).json({ 
                 success: false, 
                 message: `Cannot cancel request that is ${rideRequest.status}` 
             });
-        }
-        
+        }       
         rideRequest.status = 'rejected';
         await rideRequest.save();
         

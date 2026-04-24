@@ -1,8 +1,6 @@
 const Ride = require('../models/Ride');
 const RideRequest = require('../models/RideRequest');
 
-
-//book a seat in a ride
 //book a seat in a ride
 const bookSeat = async (req, res) => {
     try {
@@ -12,7 +10,6 @@ const bookSeat = async (req, res) => {
         console.log('Request body:', req.body);
         
         const { seats } = req.body;
-        
         if (!seats || seats < 1) {
             return res.status(400).json({ 
                 success: false, 
@@ -44,9 +41,7 @@ const bookSeat = async (req, res) => {
                 success: false, 
                 message: `Only ${ride.availableSeats} seat(s) available` 
             });
-        }
-        
-        // Check if user already booked this ride
+        }   
         const existingBooking = ride.bookings.find(
             b => b.userId && b.userId.toString() === req.user.id && b.status !== 'cancelled'
         );
@@ -57,7 +52,6 @@ const bookSeat = async (req, res) => {
             });
         }
         
-        // Add booking
         ride.bookings.push({
             userId: req.user.id,
             userName: req.user.name,
@@ -102,13 +96,10 @@ const getMyBookings = async (req, res) => {
     try {
         console.log('Getting bookings for user:', req.user.id);
         
-        // 1. Get direct bookings from Ride.bookings array
         const rides = await Ride.find({ 'bookings.userId': req.user.id });
         
         const bookings = [];
-        
-        // Add direct bookings
-        rides.forEach(ride => {
+                rides.forEach(ride => {
             ride.bookings.forEach(booking => {
                 if (booking.userId.toString() === req.user.id && booking.status !== 'cancelled') {
                     bookings.push({
@@ -131,11 +122,9 @@ const getMyBookings = async (req, res) => {
             });
         });
         
-        // 2. Get ride requests (pending, accepted, rejected)
         const rideRequests = await RideRequest.find({ passengerId: req.user.id })
             .sort({ createdAt: -1 });
         
-        // Add ride requests
         rideRequests.forEach(request => {
             bookings.push({
                 id: request._id,
@@ -152,11 +141,8 @@ const getMyBookings = async (req, res) => {
                 requestedAt: request.createdAt,
                 acceptedBy: request.acceptedBy
             });
-        });
-        
-        // Sort by date (newest first)
-        bookings.sort((a, b) => new Date(b.bookedAt || b.requestedAt) - new Date(a.bookedAt || a.requestedAt));
-        
+        });   
+        bookings.sort((a, b) => new Date(b.bookedAt || b.requestedAt) - new Date(a.bookedAt || a.requestedAt));     
         console.log(`Found ${bookings.length} total items (${rides.length} direct bookings, ${rideRequests.length} requests)`);
         
         res.json({
@@ -177,7 +163,6 @@ const cancelBooking = async (req, res) => {
     try {
         const { rideId, bookingId } = req.params;
         
-        // First, check if this is a ride request
         const rideRequest = await RideRequest.findOne({ 
             _id: bookingId,
             passengerId: req.user.id,
@@ -185,7 +170,6 @@ const cancelBooking = async (req, res) => {
         });
         
         if (rideRequest) {
-            // Cancel the ride request
             rideRequest.status = 'rejected';
             await rideRequest.save();
             
@@ -195,7 +179,7 @@ const cancelBooking = async (req, res) => {
             });
         }
         
-        // If not a ride request, try direct booking
+        //if not a ride request, try direct booking
         const ride = await Ride.findById(rideId);
         if (!ride) {
             return res.status(404).json({ 
@@ -217,8 +201,7 @@ const cancelBooking = async (req, res) => {
                 success: false, 
                 message: 'Not authorized' 
             });
-        }
-        
+        }        
         booking.status = 'cancelled';
         ride.availableSeats += booking.seats;
         await ride.save();

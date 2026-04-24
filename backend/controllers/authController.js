@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-//Generating JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
@@ -11,7 +10,7 @@ const generateToken = (id) => {
 //register a new user
 const registerUser = async (req, res) => {
     try {
-        console.log('Register request body:', req.body);  // Debug log
+        console.log('Register request body:', req.body);
 
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
@@ -21,7 +20,6 @@ const registerUser = async (req, res) => {
             });
         }
         
-        // Check if user exists
         
         const userExists = await User.findOne({ email });
         if (userExists) {
@@ -30,9 +28,7 @@ const registerUser = async (req, res) => {
                 message: 'User already exists' 
             });
         }
-        
-        // Create user
-        console.log('Creating user...');
+                console.log('Creating user...');
         const user = await User.create({ name, email, password });
         console.log('User created:', user);
         const token = generateToken(user._id);
@@ -74,8 +70,7 @@ const loginUser = async (req, res) => {
                 success: false, 
                 message: 'Invalid email or password' 
             });
-        }
-        
+        }    
         const token = generateToken(user._id);
         
         res.json({
@@ -117,9 +112,7 @@ const changePassword = async (req, res) => {
         }
         
         user.password = newPassword;
-        await user.save();
-        
-        //generate new token after password change
+        await user.save();      
         const token = generateToken(user._id);
         
         res.json({
@@ -143,7 +136,7 @@ const getCurrentUser = async (req, res) => {
     });
 };
 
-// Logout user (for JWT, this is handled on the client side by deleting the token)
+// Logout user (for jwt this is handled on the client side by deleting the token)
 const logoutUser = (req, res) => {
     res.json({
         success: true,

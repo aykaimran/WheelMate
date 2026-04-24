@@ -15,9 +15,8 @@ const protect = async (req, res, next) => {
                     success: false, 
                     message: 'User not found' 
                 });
-            }
-            
-            next();  // Make sure next() is called
+            }     
+            next();
         } catch (error) {
             console.error('Auth error:', error);
             return res.status(401).json({ 
